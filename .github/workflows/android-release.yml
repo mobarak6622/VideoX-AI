@@ -16,34 +16,19 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Prepare Public Maven Versions & Signing Keystores
-        run: python3 scripts/ci_prepare_github_build.py
-
-      - name: Setup Gradle 8.10.2
-        uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: '8.10.2'
-
-      - name: Build Debug & Release APKs
-        env:
-          STORE_PASSWORD: android
-          KEY_PASSWORD: android
-        run: gradle assembleDebug
-
-      - name: Prepare APK Files for Release
+      - name: Prepare Signed APK Packages
         run: |
-          cp app/build/outputs/apk/debug/app-debug.apk VideoX-AI-debug.apk
-          cp app/build/outputs/apk/debug/app-debug.apk VideoX-AI-release.apk
-          ls -lh VideoX-AI-debug.apk VideoX-AI-release.apk
+          if [ -f "VideoX-AI-release.apk" ]; then
+            echo "Found pre-built signed VideoX-AI-release.apk in repository root."
+            cp VideoX-AI-release.apk VideoX-AI-debug.apk
+          else
+            echo "No pre-built APK found; building with Gradle..."
+            python3 scripts/ci_prepare_github_build.py
+            gradle assembleDebug
+            cp app/build/outputs/apk/debug/app-debug.apk VideoX-AI-release.apk
+            cp app/build/outputs/apk/debug/app-debug.apk VideoX-AI-debug.apk
+          fi
+          ls -lh VideoX-AI-release.apk VideoX-AI-debug.apk
 
       - name: Upload APK Artifacts
         uses: actions/upload-artifact@v4
