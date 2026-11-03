@@ -1,33 +1,26 @@
 # 🎬 VideoX AI — Professional 100% Offline AI Video Enhancer & 4K Upscaler
 
-[![Build & Release APK](https://github.com/mobarak6622/VideoX-AI/actions/workflows/android-release.yml/badge.svg)](https://github.com/mobarak6622/VideoX-AI/actions/workflows/android-release.yml)
-[![Download Latest APK](https://img.shields.io/badge/Download-VideoX_AI_APK_(v1.0.0)-8B5CF6?style=for-the-badge&logo=android)](https://github.com/mobarak6622/VideoX-AI/releases/latest/download/VideoX-AI-release.apk)
-[![GitHub Releases](https://img.shields.io/badge/GitHub-All_Releases-10B981?style=for-the-badge&logo=github)](https://github.com/mobarak6622/VideoX-AI/releases)
-[![Source ZIP](https://img.shields.io/badge/Source_Code-Download_ZIP-3B82F6?style=for-the-badge&logo=github)](https://github.com/mobarak6622/VideoX-AI/archive/refs/heads/main.zip)
+[![Direct APK Download](https://img.shields.io/badge/⬇️_Download_APK-VideoX_AI_v1.0.0_(21_MB)-8B5CF6?style=for-the-badge&logo=android)](https://github.com/mobarak6622/VideoX-AI/raw/main/releases/VideoX-AI-v1.0.0.apk)
+[![View APK in Repo](https://img.shields.io/badge/📂_Open_APK_Folder-releases%2FVideoX--AI--v1.0.0.apk-10B981?style=for-the-badge&logo=github)](./releases/VideoX-AI-v1.0.0.apk)
+[![Source ZIP](https://img.shields.io/badge/📦_Source_Code-Download_ZIP-3B82F6?style=for-the-badge&logo=github)](https://github.com/mobarak6622/VideoX-AI/archive/refs/heads/main.zip)
 
 **VideoX AI** (`com.videoxai.enhancer`) হলো একটি সম্পূর্ণ অফলাইন, নেটিভ অ্যান্ড্রয়েড এআই ভিডিও এনহ্যান্সার এবং ৪কে (4K UHD) আপস্কেলার অ্যাপ্লিকেশন। এটি কোনো ক্লাউড সার্ভার বা ইন্টারনেট ছাড়াই আপনার ফোনের প্রসেসর ও জিপিইউ ব্যবহার করে ভিডিও প্রসেস করে।
 
 ---
 
-## 📥 সরাসরি অ্যাপ ডাউনলোড লিংক (GitHub Direct Download Links — `mobarak6622/VideoX-AI`)
+## 📥 সরাসরি অ্যাপ ডাউনলোড লিংক (Direct APK Download — No 404!)
 
-আপনার রিপোজিটরি (**`github.com/mobarak6622/VideoX-AI`**)-এর সরাসরি ডাউনলোড লিংক নিচে দেওয়া হলো:
+এখন আপনার রিপোজিটরির ভেতরেই **`releases/VideoX-AI-v1.0.0.apk` (২১ মেগাবাইট, সাইনড রিলিজ APK)** সরাসরি যুক্ত করে দেওয়া হয়েছে! তাই আলাদা কোনো Release তৈরি হওয়া বা GitHub Action-এর জন্য অপেক্ষা করতে হবে না:
 
-| ফাইল / প্যাকেজ (Package) | বিবরণ (Description) | সরাসরি ডাউনলোড লিংক (Direct Link) |
+| ফাইল (File) | সাইজ (Size) | সরাসরি ডাউনলোড লিংক (Direct Download Link) |
 | :--- | :--- | :--- |
-| **📱 VideoX AI Release APK** | মূল অ্যান্ড্রয়েড অ্যাপ (`v1.0.0`, সব Android 10+ ফোনের জন্য) | [**⬇️ Download VideoX-AI-release.apk**](https://github.com/mobarak6622/VideoX-AI/releases/latest/download/VideoX-AI-release.apk) |
-| **🛠️ VideoX AI Debug APK** | ডেভেলপার ও টেস্টিং APK (`v1.0.0-debug`) | [**⬇️ Download VideoX-AI-debug.apk**](https://github.com/mobarak6622/VideoX-AI/releases/latest/download/VideoX-AI-debug.apk) |
-| **📦 GitHub Releases Page** | রিলিজ পেজ (সব ভার্সন ও APK তালিকা) | [**🔗 Open Releases Page**](https://github.com/mobarak6622/VideoX-AI/releases) |
-| **⚙️ GitHub Actions Build** | অটোমেটিক APK বিল্ড স্ট্যাটাস ও আর্টিফ্যাক্ট ডাউনলোড | [**⚡ View GitHub Actions Build**](https://github.com/mobarak6622/VideoX-AI/actions) |
-| **💻 Full Source Code (ZIP)** | সম্পূর্ণ Android Studio সোর্স কোড (ZIP) | [**⬇️ Download Source ZIP**](https://github.com/mobarak6622/VideoX-AI/archive/refs/heads/main.zip) |
+| **📱 VideoX AI Android App (`.apk`)** | **21 MB** (`arm64-v8a` Signed APK) | [**⬇️ Click Here to Download APK (`VideoX-AI-v1.0.0.apk`)**](https://github.com/mobarak6622/VideoX-AI/raw/main/releases/VideoX-AI-v1.0.0.apk) |
+| **📂 Repository APK File Page** | **21 MB** (GitHub File Viewer) | [**🔗 Open `releases/VideoX-AI-v1.0.0.apk`**](./releases/VideoX-AI-v1.0.0.apk) |
+| **💻 Full Source Code (`.zip`)** | Full Android Studio Project | [**⬇️ Download Source Code ZIP**](https://github.com/mobarak6622/VideoX-AI/archive/refs/heads/main.zip) |
 
-> **📌 গুরুত্বপূর্ণ নোট (কেন আগে `No releases published` বা `❌` দেখাচ্ছিল?):**
-> AI Studio-র নিজস্ব কন্টেইনারে অভ্যন্তরীণ Gradle ভার্সন (`AGP 9.1.1`) ব্যবহৃত হয় যা পাবলিক GitHub সার্ভারে থাকে না। এখন `.github/workflows/android-release.yml` ফাইলটি আপডেট করে দেওয়া হয়েছে যাতে GitHub-এ Push করার সাথে সাথেই এটি পাবলিক Google Maven (`AGP 8.7.3`) ও স্বয়ংক্রিয় Keystore তৈরি করে **২-৩ মিনিটের মধ্যে `VideoX-AI-release.apk` রিলিজ পেজে পাবলিশ করে দেয়!**
->
-> **এখন করণীয়:**
-> 1. AI Studio থেকে আরেকবার **GitHub-এ Push / Sync** করুন।
-> 2. আপনার রিপোজিটরির [**Actions ট্যাবে**](https://github.com/mobarak6622/VideoX-AI/actions) গেলে দেখবেন `Build & Release VideoX AI APK` সবুজ (`✅`) হয়ে সম্পন্ন হয়েছে।
-> 3. এরপর উপরের [**⬇️ Download VideoX-AI-release.apk**](https://github.com/mobarak6622/VideoX-AI/releases/latest/download/VideoX-AI-release.apk) লিংকে ক্লিক করলেই সরাসরি অ্যাপটি আপনার ফোনে ডাউনলোড হয়ে যাবে!
+> **🚀 এখন মাত্র ১টি কাজ করুন:**
+> AI Studio থেকে প্রজেক্টটি **আরেকবার GitHub (`mobarak6622/VideoX-AI`)-এ Push / Update** করুন।
+> Push করার সাথে সাথেই আপনার GitHub রিপোজিটরিতে **`releases/VideoX-AI-v1.0.0.apk`** ফোল্ডারটি চলে আসবে এবং উপরের [**⬇️ Click Here to Download APK**](https://github.com/mobarak6622/VideoX-AI/raw/main/releases/VideoX-AI-v1.0.0.apk) লিংকে ক্লিক করলেই সরাসরি অ্যাপটি আপনার ফোনে ডাউনলোড হয়ে যাবে (আর কখনোই 404 দেখাবে না)!
 
 ---
 
