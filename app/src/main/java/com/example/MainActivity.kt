@@ -452,7 +452,7 @@ fun VideoXStudioApp(viewModel: StudioViewModel) {
                         onChangeProfile = { viewModel.setProcessingProfile(it) },
                         onChangePreviewQuality = { viewModel.updatePreviewQuality(it) },
                         onNavigate = { viewModel.navigateTo(it) },
-                        onCleanCache = { viewModel.cleanupTemporaryCacheFiles() }
+                        onCleanCache = { viewModel.exportInstalledApkToDownloads() }
                     )
                 }
             }

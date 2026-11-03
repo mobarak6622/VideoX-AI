@@ -464,8 +464,13 @@ fun SettingsScreen(
                     OutlinedButton(onClick = { onNavigate(StudioScreen.ONBOARDING) }, modifier = Modifier.fillMaxWidth()) {
                         Text("Replay Studio Onboarding Guide")
                     }
-                    OutlinedButton(onClick = onCleanCache, modifier = Modifier.fillMaxWidth()) {
-                        Text("Purge Temporary Export Buffers")
+                    Button(
+                        onClick = onCleanCache,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("btn_save_apk_downloads")
+                    ) {
+                        Text("Save Installed APK to Downloads (VideoX_AI_v1.0.0.apk)")
                     }
                 }
             }

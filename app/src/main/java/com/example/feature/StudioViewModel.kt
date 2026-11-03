@@ -95,6 +95,7 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
     private val videoAnalyzer = VideoAnalyzer(context)
     private val sampleVideoGenerator = SampleVideoGenerator(context)
     private val mediaStoreSaver = MediaStoreVideoSaver(context)
+    private val apkExportHelper = com.example.core.storage.ApkExportHelper(context)
     private val processingEngine = VideoProcessingEngine(
         context = context,
         onnxAiEngine = onnxAiEngine,
@@ -624,6 +625,21 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
         viewModelScope.launch {
             prefsRepository.setOnboardingCompleted(true)
             _currentScreen.value = StudioScreen.HOME
+        }
+    }
+
+    fun exportInstalledApkToDownloads() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val res = apkExportHelper.saveInstalledApkToDownloads()
+            res.fold(
+                onSuccess = { saved ->
+                    val sizeMb = String.format("%.1f MB", saved.sizeBytes / (1024.0 * 1024.0))
+                    _statusBannerMessage.value = "APK Saved! File: ${saved.displayPath} ($sizeMb)"
+                },
+                onFailure = { err ->
+                    _statusBannerMessage.value = "APK Export failed: ${err.localizedMessage}"
+                }
+            )
         }
     }
 }
