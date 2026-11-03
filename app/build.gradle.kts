@@ -14,7 +14,7 @@ android {
 
   defaultConfig {
     applicationId = "com.videoxai.enhancer"
-    minSdk = 29
+    minSdk = 24
     targetSdk = 36
     versionCode = 1
     versionName = "1.0.0"
@@ -62,6 +62,14 @@ android {
   buildFeatures {
     compose = true
     buildConfig = true
+  }
+  packaging {
+    jniLibs {
+      useLegacyPackaging = true
+    }
+    dex {
+      useLegacyPackaging = true
+    }
   }
   testOptions {
     unitTests {

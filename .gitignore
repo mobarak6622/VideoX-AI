@@ -17,4 +17,7 @@ local.properties
 .env
 debug.keystore
 app/build/
+*.apk
+!apk/*.b64
+
 
