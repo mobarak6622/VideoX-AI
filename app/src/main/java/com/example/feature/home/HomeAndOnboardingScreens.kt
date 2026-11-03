@@ -202,7 +202,8 @@ fun HomeDashboardScreen(
     onPickFromStorageSaf: () -> Unit,
     onGenerateTestVideo: () -> Unit,
     onNavigate: (StudioScreen) -> Unit,
-    onOpenProject: (VideoProjectEntity) -> Unit
+    onOpenProject: (VideoProjectEntity) -> Unit,
+    onDownloadApk: () -> Unit = {}
 ) {
     LazyColumn(
         modifier = Modifier
@@ -344,6 +345,18 @@ fun HomeDashboardScreen(
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(strings.generateTestVideo)
                         }
+                    }
+
+                    Button(
+                        onClick = onDownloadApk,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(48.dp)
+                            .testTag("btn_home_download_apk"),
+                        shape = RoundedCornerShape(14.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = CyberBlue)
+                    ) {
+                        Text("⬇️ Save APK File (VideoX_AI_v1.0.0.apk)", style = MaterialTheme.typography.labelLarge)
                     }
                 }
             }

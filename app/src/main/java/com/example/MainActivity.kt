@@ -319,7 +319,8 @@ fun VideoXStudioApp(viewModel: StudioViewModel) {
                             viewModel.generateAndImportSampleVideo()
                         },
                         onNavigate = { viewModel.navigateTo(it) },
-                        onOpenProject = { viewModel.reopenProject(it) }
+                        onOpenProject = { viewModel.reopenProject(it) },
+                        onDownloadApk = { viewModel.exportInstalledApkToDownloads() }
                     )
 
                     StudioScreen.VIDEO_ANALYSIS -> VideoAnalysisScreen(
