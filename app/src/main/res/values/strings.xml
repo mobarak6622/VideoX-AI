@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">VideoX AI</string>
+    <string name="tagline">100% Offline AI Video Enhancer &amp; 4K Upscaler</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_projects">Projects</string>
+    <string name="nav_tools">Tools</string>
+    <string name="nav_settings">Settings</string>
+    <string name="action_import_video">Import Video</string>
+    <string name="action_load_sample">Generate Test Video</string>
+    <string name="action_start_processing">Start Real Processing</string>
+    <string name="action_export">Export Video</string>
+    <string name="privacy_badge">100% On-Device • Zero Cloud • No Internet Permission</string>
+</resources>

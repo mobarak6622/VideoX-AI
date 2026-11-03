@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="400dp"
+    android:height="200dp"
+    android:viewportWidth="400"
+    android:viewportHeight="200">
+    <path android:pathData="M0,0h400v200h-400z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="0"
+                android:startY="0"
+                android:endX="400"
+                android:endY="200"
+                android:type="linear">
+                <item android:offset="0.0" android:color="#FF0B0D14" />
+                <item android:offset="0.5" android:color="#FF181432" />
+                <item android:offset="1.0" android:color="#FF0E2244" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <!-- Perspective Neural Grid Lines -->
+    <path
+        android:strokeColor="#228B5CF6"
+        android:strokeWidth="1"
+        android:pathData="M0,40 L400,40 M0,80 L400,80 M0,120 L400,120 M0,160 L400,160 M80,0 L80,200 M160,0 L160,200 M240,0 L240,200 M320,0 L320,200" />
+    <!-- Glowing Orbs -->
+    <path
+        android:fillColor="#338B5CF6"
+        android:pathData="M110,100 m-65,0 a65,65 0 1,0 130,0 a65,65 0 1,0 -130,0" />
+    <path
+        android:fillColor="#333B82F6"
+        android:pathData="M290,95 m-75,0 a75,75 0 1,0 150,0 a75,75 0 1,0 -150,0" />
+    <!-- Split Before / After Frame Visualization -->
+    <path
+        android:fillColor="#44151925"
+        android:strokeColor="#FF8B5CF6"
+        android:strokeWidth="2"
+        android:pathData="M120,36 L280,36 C286,36 290,40 290,46 L290,154 C290,160 286,164 280,164 L120,164 C114,164 110,160 110,154 L110,46 C110,40 114,36 120,36 Z" />
+    <!-- Split Line -->
+    <path
+        android:strokeColor="#FF38BDF8"
+        android:strokeWidth="2.5"
+        android:pathData="M200,26 L200,174" />
+    <!-- Play / Enhance Symbol -->
+    <path
+        android:fillColor="#FF8B5CF6"
+        android:pathData="M182,78 L182,122 L222,100 Z" />
+    <!-- 4K Sparkles -->
+    <path
+        android:fillColor="#FF38BDF8"
+        android:pathData="M255,58 L259,68 L269,72 L259,76 L255,86 L251,76 L241,72 L251,68 Z" />
+    <path
+        android:fillColor="#FFC084FC"
+        android:pathData="M145,118 L148,125 L155,128 L148,131 L145,138 L142,131 L135,128 L142,125 Z" />
+</vector>

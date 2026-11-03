@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">VideoX AI</string>
+    <string name="tagline">১০০% অফলাইন এআই ভিডিও এনহ্যান্সার এবং ৪কে আপস্কেলার</string>
+    <string name="nav_home">হোম</string>
+    <string name="nav_projects">প্রজেক্টস</string>
+    <string name="nav_tools">টুলস</string>
+    <string name="nav_settings">সেটিংস</string>
+    <string name="action_import_video">ভিডিও ইমপোর্ট করুন</string>
+    <string name="action_load_sample">টেস্ট ভিডিও তৈরি করুন</string>
+    <string name="action_start_processing">প্রসেসিং শুরু করুন</string>
+    <string name="action_export">ভিডিও এক্সপোর্ট করুন</string>
+    <string name="privacy_badge">১০০% অন-ডিভাইস • ক্লাউড মুক্ত • ইন্টারনেট ছাড়া চলে</string>
+</resources>
