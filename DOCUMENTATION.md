@@ -1,4 +1,11 @@
-# VideoX AI — Professional 100% Offline AI Video Enhancer & 4K Upscaler
+# VideoX AI — Technical Documentation & Download Guide
+
+## 📥 GitHub & APK Download Links (ডাউনলোড লিংক)
+- **Latest Release APK:** [`../../releases/latest/download/VideoX-AI-release.apk`](../../releases/latest/download/VideoX-AI-release.apk)
+- **Latest Debug APK:** [`../../releases/latest/download/VideoX-AI-debug.apk`](../../releases/latest/download/VideoX-AI-debug.apk)
+- **All GitHub Releases:** [`../../releases/latest`](../../releases/latest)
+- **Full Project Source (ZIP):** [`../../archive/refs/heads/main.zip`](../../archive/refs/heads/main.zip)
+- **Google AI Studio Shared App:** [`https://ais-pre-7q3en73axqvtrfozzmvwwk-934537935781.asia-east1.run.app`](https://ais-pre-7q3en73axqvtrfozzmvwwk-934537935781.asia-east1.run.app)
 
 ## 1. Architecture & Offline Privacy Guarantee
 - **Application ID:** `com.videoxai.enhancer`
