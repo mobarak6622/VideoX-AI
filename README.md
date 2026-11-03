@@ -1,38 +1,37 @@
 # 🎬 VideoX AI — Professional 100% Offline AI Video Enhancer & 4K Upscaler
 
-[![Direct APK Download](https://img.shields.io/badge/⬇️_Download_APK-VideoX_AI_v1.0.0_(21_MB)-8B5CF6?style=for-the-badge&logo=android)](https://github.com/mobarak6622/VideoX-AI/raw/main/releases/VideoX-AI-v1.0.0.apk)
-[![View APK in Repo](https://img.shields.io/badge/📂_Open_APK_Folder-releases%2FVideoX--AI--v1.0.0.apk-10B981?style=for-the-badge&logo=github)](./releases/VideoX-AI-v1.0.0.apk)
-[![Source ZIP](https://img.shields.io/badge/📦_Source_Code-Download_ZIP-3B82F6?style=for-the-badge&logo=github)](https://github.com/mobarak6622/VideoX-AI/archive/refs/heads/main.zip)
+[![Build & Release APK](https://github.com/mobarak6622/VideoX-AI/actions/workflows/android-release.yml/badge.svg)](https://github.com/mobarak6622/VideoX-AI/actions/workflows/android-release.yml)
+[![Download Latest APK](https://img.shields.io/badge/⬇️_Download_APK-VideoX_AI_v1.0.0-8B5CF6?style=for-the-badge&logo=android)](https://github.com/mobarak6622/VideoX-AI/releases/latest/download/VideoX-AI-release.apk)
+[![GitHub Releases](https://img.shields.io/badge/📦_GitHub-All_Releases-10B981?style=for-the-badge&logo=github)](https://github.com/mobarak6622/VideoX-AI/releases)
+[![Source ZIP](https://img.shields.io/badge/💻_Source_Code-Download_ZIP-3B82F6?style=for-the-badge&logo=github)](https://github.com/mobarak6622/VideoX-AI/archive/refs/heads/main.zip)
 
 **VideoX AI** (`com.videoxai.enhancer`) হলো একটি সম্পূর্ণ অফলাইন, নেটিভ অ্যান্ড্রয়েড এআই ভিডিও এনহ্যান্সার এবং ৪কে (4K UHD) আপস্কেলার অ্যাপ্লিকেশন। এটি কোনো ক্লাউড সার্ভার বা ইন্টারনেট ছাড়াই আপনার ফোনের প্রসেসর ও জিপিইউ ব্যবহার করে ভিডিও প্রসেস করে।
 
 ---
 
-## 📥 সরাসরি অ্যাপ ডাউনলোড লিংক (Direct APK Download — No 404!)
+## 📥 সরাসরি অ্যাপ ডাউনলোড লিংক (`github.com/mobarak6622/VideoX-AI`)
 
-এখন আপনার রিপোজিটরির ভেতরেই **`releases/VideoX-AI-v1.0.0.apk` (২১ মেগাবাইট, সাইনড রিলিজ APK)** সরাসরি যুক্ত করে দেওয়া হয়েছে! তাই আলাদা কোনো Release তৈরি হওয়া বা GitHub Action-এর জন্য অপেক্ষা করতে হবে না:
-
-| ফাইল (File) | সাইজ (Size) | সরাসরি ডাউনলোড লিংক (Direct Download Link) |
+| ফাইল / প্যাকেজ (Package) | বিবরণ (Description) | সরাসরি ডাউনলোড লিংক (Direct Link) |
 | :--- | :--- | :--- |
-| **📱 VideoX AI Android App (`.apk`)** | **21 MB** (`arm64-v8a` Signed APK) | [**⬇️ Click Here to Download APK (`VideoX-AI-v1.0.0.apk`)**](https://github.com/mobarak6622/VideoX-AI/raw/main/releases/VideoX-AI-v1.0.0.apk) |
-| **📂 Repository APK File Page** | **21 MB** (GitHub File Viewer) | [**🔗 Open `releases/VideoX-AI-v1.0.0.apk`**](./releases/VideoX-AI-v1.0.0.apk) |
-| **💻 Full Source Code (`.zip`)** | Full Android Studio Project | [**⬇️ Download Source Code ZIP**](https://github.com/mobarak6622/VideoX-AI/archive/refs/heads/main.zip) |
-
-> **🚀 এখন মাত্র ১টি কাজ করুন:**
-> AI Studio থেকে প্রজেক্টটি **আরেকবার GitHub (`mobarak6622/VideoX-AI`)-এ Push / Update** করুন।
-> Push করার সাথে সাথেই আপনার GitHub রিপোজিটরিতে **`releases/VideoX-AI-v1.0.0.apk`** ফোল্ডারটি চলে আসবে এবং উপরের [**⬇️ Click Here to Download APK**](https://github.com/mobarak6622/VideoX-AI/raw/main/releases/VideoX-AI-v1.0.0.apk) লিংকে ক্লিক করলেই সরাসরি অ্যাপটি আপনার ফোনে ডাউনলোড হয়ে যাবে (আর কখনোই 404 দেখাবে না)!
+| **📱 VideoX AI Release APK** | মূল অ্যান্ড্রয়েড অ্যাপ (`v1.0.0`, সব Android 10+ ফোনের জন্য) | [**⬇️ Download VideoX-AI-release.apk**](https://github.com/mobarak6622/VideoX-AI/releases/latest/download/VideoX-AI-release.apk) |
+| **🛠️ VideoX AI Debug APK** | ডেভেলপার ও টেস্টিং APK (`v1.0.0-debug`) | [**⬇️ Download VideoX-AI-debug.apk**](https://github.com/mobarak6622/VideoX-AI/releases/latest/download/VideoX-AI-debug.apk) |
+| **📦 GitHub Releases Page** | রিলিজ পেজ (সব ভার্সন ও APK তালিকা) | [**🔗 Open Releases Page**](https://github.com/mobarak6622/VideoX-AI/releases) |
+| **⚡ GitHub Actions APK Build** | লাইভ বিল্ড প্রগ্রেস ও আর্টিফ্যাক্ট ডাউনলোড | [**⚙️ Open GitHub Actions**](https://github.com/mobarak6622/VideoX-AI/actions) |
+| **💻 Full Source Code (ZIP)** | সম্পূর্ণ Android Studio সোর্স কোড (ZIP) | [**⬇️ Download Source ZIP**](https://github.com/mobarak6622/VideoX-AI/archive/refs/heads/main.zip) |
 
 ---
 
-## 🧠 ভেরিফাইড ওপেন-সোর্স এআই মডেল ডাউনলোড লিংক (Optional External `.onnx` Models)
+## ⚠️ কেন গিটহাবে ক্লিক করলে `404` দেখাচ্ছে এবং কিভাবে ঠিক করবেন? (২ মিনিটের কাজ)
 
-অ্যাপের ভেতরে ৩টি অফলাইন `.onnx` মডেল (`esrgan_lite_sr.onnx`, `rife_lite_flow.onnx`, `ai_denoise_cnn.onnx`) আগে থেকেই যুক্ত করা আছে। এছাড়াও আপনি নিচের পাবলিক GitHub লিংকগুলো থেকে অতিরিক্ত মডেল ডাউনলোড করে অ্যাপের **Tools → Local ONNX AI Model Manager → Import .onnx** অপশনের মাধ্যমে অফলাইনে ব্যবহার করতে পারবেন:
+আমি এখান থেকে সরাসরি আপনার ব্যক্তিগত GitHub অ্যাকাউন্টে (`mobarak6622/VideoX-AI`) ফাইল আপলোড বা Push করতে পারি না—**AI Studio-র ভেতর থেকে আপনাকে নিজে একবার Push বাটনে ক্লিক করতে হবে**।
 
-| মডেল (AI Model) | কাজ (Function) | অফিশিয়াল GitHub লিংক |
-| :--- | :--- | :--- |
-| **Real-ESRGAN** | 4K AI Super Resolution | [https://github.com/xinntao/Real-ESRGAN/releases](https://github.com/xinntao/Real-ESRGAN/releases) |
-| **Practical-RIFE** | 60/120 FPS Optical Flow Interpolation | [https://github.com/hzwer/Practical-RIFE](https://github.com/hzwer/Practical-RIFE) |
-| **ONNX Model Zoo** | Super Resolution & Vision ONNX Models | [https://github.com/onnx/models](https://github.com/onnx/models) |
+### ধাপ ১: AI Studio থেকে GitHub-এ নতুন কোডটি Push করুন
+1. আপনার এই **Google AI Studio** পেজের উপরের টুলবারে থাকা **GitHub আইকনে** ক্লিক করে নতুন আপডেটটি **`mobarak6622/VideoX-AI`** রিপোজিটরিতে **Push / Sync** করুন।
+
+### ধাপ ২: GitHub Actions থেকে অটোমেটিক APK রিলিজ চালু করুন (যদি স্বয়ংক্রিয়ভাবে চালু না হয়)
+1. আপনার ফোনের ব্রাউজারে এই লিংকে যান: [**https://github.com/mobarak6622/VideoX-AI/actions**](https://github.com/mobarak6622/VideoX-AI/actions)
+2. বাম পাশে **"Build & Release VideoX AI APK"**-এ ট্যাপ করুন এবং **"Run workflow"** বাটনে ট্যাপ করুন।
+3. ২–৩ মিনিট পর বিল্ডটি সবুজ (**`✅`**) হয়ে গেলে উপরের [**⬇️ Download VideoX-AI-release.apk**](https://github.com/mobarak6622/VideoX-AI/releases/latest/download/VideoX-AI-release.apk) লিংকে ক্লিক করলেই সরাসরি আপনার ফোনে `.apk` ফাইলটি ডাউনলোড হয়ে যাবে!
 
 ---
 
