@@ -24,13 +24,16 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.BlurOn
+import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.CenterFocusStrong
 import androidx.compose.material.icons.filled.ColorLens
 import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.HighQuality
+import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.filled.Memory
 import androidx.compose.material.icons.filled.MovieCreation
 import androidx.compose.material.icons.filled.PhotoLibrary
+import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.SlowMotionVideo
 import androidx.compose.material.icons.filled.Tune
@@ -610,7 +613,10 @@ fun StudioModuleGrid(
     onNavigate: (StudioScreen) -> Unit
 ) {
     val tools = listOf(
-        ToolCardSpec(strings.toolAiUpscaler, "ONNX 4K SR", Icons.Default.HighQuality, ElectricPurple, StudioScreen.AI_UPSCALER, "tool_card_upscaler"),
+        ToolCardSpec(strings.toolAiUpscaler, "CapCut Pro 4K SR", Icons.Default.HighQuality, ElectricPurple, StudioScreen.AI_UPSCALER, "tool_card_upscaler"),
+        ToolCardSpec("DSLR Bokeh", "f/1.4 Lens Blur", Icons.Default.CameraAlt, ElectricPurple, StudioScreen.DSLR_BOKEH, "tool_card_bokeh"),
+        ToolCardSpec("ExoPlayer Preview", "Split Wipe A/B", Icons.Default.PlayCircle, CyberBlue, StudioScreen.VIDEO_PREVIEW, "tool_card_preview"),
+        ToolCardSpec("AI Task Queue", "WorkManager Jobs", Icons.Default.Layers, EmeraldSuccess, StudioScreen.QUEUE_MANAGER, "tool_card_queue"),
         ToolCardSpec(strings.toolAutoColor, "14-Axis Grading", Icons.Default.ColorLens, CyberBlue, StudioScreen.AUTO_COLOR, "tool_card_color"),
         ToolCardSpec(strings.toolFpsConverter, "24..120 FPS + RIFE", Icons.Default.SlowMotionVideo, ElectricPurple, StudioScreen.FPS_CONVERTER, "tool_card_fps"),
         ToolCardSpec(strings.toolStabilizer, "Motion Trajectory", Icons.Default.CenterFocusStrong, CyberBlue, StudioScreen.STABILIZER, "tool_card_stabilizer"),

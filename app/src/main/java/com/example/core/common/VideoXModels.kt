@@ -241,6 +241,24 @@ data class ExportConfig(
     val customBitrateMbps: Float = 16f
 )
 
+data class DslrBokehConfig(
+    val enabled: Boolean = false,
+    val aperture: String = "f/1.8", // f/1.2, f/1.4, f/1.8, f/2.8, f/4.0
+    val blurRadius: Float = 0.5f,   // 0f..1f
+    val focalDistance: Float = 0.45f, // 0f..1f (normalized subject plane)
+    val depthFalloff: Float = 0.6f,   // smoothness of depth transition
+    val bokehHighlightBoost: Float = 0.35f, // specular bokeh circle glow
+    val portraitIsolation: Boolean = true
+)
+
+data class AiDirectorConfig(
+    val cloudAiEnabled: Boolean = true,
+    val activeGenrePreset: String = "Auto Detect (CapCut Pro AI)",
+    val dslrLightingEnhanced: Boolean = true,
+    val cinematicDepthOfField: Boolean = true,
+    val directorNotes: String = ""
+)
+
 data class EnhancementPipelineState(
     val upscale: UpscaleConfig = UpscaleConfig(),
     val color: ColorConfig = ColorConfig(),
@@ -248,6 +266,8 @@ data class EnhancementPipelineState(
     val denoise: DenoiseConfig = DenoiseConfig(),
     val stabilize: StabilizeConfig = StabilizeConfig(),
     val sharpen: SharpenConfig = SharpenConfig(),
+    val bokeh: DslrBokehConfig = DslrBokehConfig(),
+    val aiDirector: AiDirectorConfig = AiDirectorConfig(),
     val export: ExportConfig = ExportConfig(),
     val previewQuality: PreviewQuality = PreviewQuality.BALANCED
 )

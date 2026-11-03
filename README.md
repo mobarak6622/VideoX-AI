@@ -1,51 +1,60 @@
-# 🎬 VideoX AI — Professional 100% Offline AI Video Enhancer & 4K Upscaler
+# 🎬 VideoX AI — CapCut Pro Grade AI Video Enhancer & DSLR Bokeh Studio
 
-[![Verified APK Downloader](https://img.shields.io/badge/⚡_1--CLICK_VERIFIED_APK-Download_VideoX_AI_v1.0.0-8B5CF6?style=for-the-badge&logo=android)](https://htmlpreview.github.io/?https://github.com/mobarak6622/VideoX-AI/blob/main/download.html)
-[![Mirror Verified Downloader](https://img.shields.io/badge/📲_MIRROR_DOWNLOADER-Githack_CDN-10B981?style=for-the-badge&logo=android)](https://raw.githack.com/mobarak6622/VideoX-AI/main/download.html)
-[![GitHub Releases](https://img.shields.io/badge/📦_GitHub-Releases-3B82F6?style=for-the-badge&logo=github)](https://github.com/mobarak6622/VideoX-AI/releases)
+[![CapCut Pro Grade](https://img.shields.io/badge/⚡_CAPCUT_PRO-DSLR_Bokeh_%2B_Gemini_AI-8B5CF6?style=for-the-badge&logo=android)](#-capcut-pro--dslr-বোকেহ-ফিচারসমূহ)
+[![ExoPlayer Preview](https://img.shields.io/badge/▶️_Media3_ExoPlayer-Dual_Sync_A%2FB-10B981?style=for-the-badge&logo=android)](#-media3-exoplayer-ভিডিও-প্রিভিউ-স্ক্রিন)
+[![WorkManager Queue](https://img.shields.io/badge/⚙️_WorkManager-Background_Queue-3B82F6?style=for-the-badge&logo=android)](#-ai-এনহ্যান্সমেন্ট-টাস্ক-কিউ-সিস্টেম)
 
-**VideoX AI** (`com.videoxai.enhancer`) হলো একটি সম্পূর্ণ অফলাইন, নেটিভ অ্যান্ড্রয়েড এআই ভিডিও এনহ্যান্সার এবং ৪কে (4K UHD) আপস্কেলার অ্যাপ্লিকেশন। এটি কোনো ক্লাউড সার্ভার বা ইন্টারনেট ছাড়াই আপনার ফোনের প্রসেসর ও জিপিইউ ব্যবহার করে ভিডিও প্রসেস করে।
-
----
-
-## 📥 ১০০% ভেরিফাইড APK ডাউনলোড লিংক (No "Invalid Package" Error)
-
-> **কেন আগে `App not installed as package appears to be invalid` দেখিয়েছিল?**
-> ১. AI Studio থেকে সরাসরি বাইনারি `.apk` ফাইল গিটহাবে Push করলে UTF-8 টেক্সট এনকোডিংয়ের কারণে বাইনারি ফাইলটি নষ্ট (Corrupt) হয়ে যায়।
-> ২. এছাড়া আগের APK-তে `extractNativeLibs="false"` এবং `v2` সিগনেচার অনুপস্থিত ছিল।
->
-> **সমাধান:** এখন অফিশিয়াল **Production Release APK** (`v1 + v2 + v3` সাইন্ড, `extractNativeLibs="true"`, `arm64-v8a` + `armeabi-v7a`, Android 7.0–16 সাপোর্টেড) তৈরি করে পিওর ASCII Base64 ভেরিফাইড পার্টে (`apk/part1..4.b64`) রাখা হয়েছে, যা কখনোই নষ্ট হয় না! নিচের **১ নম্বর লিংকে** ট্যাপ করলেই আপনার ব্রাউজার স্বয়ংক্রিয়ভাবে **SHA-256 ভেরিফাইড অরিজিনাল `VideoX-AI-v1.0.0.apk`** আপনার ফোনে ডাউনলোড করে দেবে:
-
-| ডাউনলোড মাধ্যম (Method) | বিবরণ (Description) | ডাউনলোড লিংক (Tap to Download) |
-| :--- | :--- | :--- |
-| **⚡ ১. ভেরিফাইড APK ডাউনলোডার (প্রস্তাবিত)** | ১০০% অক্ষত, SHA-256 ভেরিফাইড রিলিজ APK (`v1+v2+v3` Signed) | [**🚀 Open Verified APK Downloader (Link 1)**](https://htmlpreview.github.io/?https://github.com/mobarak6622/VideoX-AI/blob/main/download.html) |
-| **📲 ২. মিরর ভেরিফাইড ডাউনলোডার (CDN)** | দ্রুতগতির বিকল্প ব্রাউজার ডাউনলোডার (`raw.githack.com`) | [**⚡ Open Verified APK Downloader (Mirror 2)**](https://raw.githack.com/mobarak6622/VideoX-AI/main/download.html) |
-| **📦 ৩. GitHub Releases APK** | GitHub Actions থেকে অটোমেটিক রিলিজ হওয়া APK | [**⬇️ Download from GitHub Releases**](https://github.com/mobarak6622/VideoX-AI/releases/latest/download/VideoX-AI-release.apk) |
-| **💻 ৪. সম্পূর্ণ সোর্স কোড (ZIP)** | Android Studio প্রজেক্ট সোর্স কোড | [**⬇️ Download Source ZIP**](https://github.com/mobarak6622/VideoX-AI/archive/refs/heads/main.zip) |
+**VideoX AI** (`com.videoxai.enhancer`) এখন সম্পূর্ণ **CapCut Premium / Pro** কোয়ালিটির অ্যাডভান্সড এআই ভিডিও এনহ্যান্সার। এতে রয়েছে ইন্টারনেট কানেক্টেড **Gemini 3.8 Flash AI Director**, ডিএসএলআর ক্যামেরার মতো **ক্রিমি বোকেহ ব্লার (f/1.2 – f/4.0)**, **Media3 ExoPlayer স্প্লিট ওয়াইপ প্রিভিউয়ার**, এবং ব্যাকগ্রাউন্ড **WorkManager টাস্ক কিউ**।
 
 ---
 
-## 🛠️ কিভাবে ডাউনলোড ও ইনস্টল করবেন (২টি সহজ ধাপ):
+## ⚠️ কেন গিটহাবে "404 - This is not the web page you are looking for" দেখাচ্ছে?
 
-1. এই **Google AI Studio** পেজের উপরের **GitHub আইকনে** ক্লিক করে নতুন আপডেটটি **`mobarak6622/VideoX-AI`** রিপোজিটরিতে **Push / Sync** করুন।
-2. আপনার ফোনের ব্রাউজার থেকে আগে ডাউনলোড করা নষ্ট `.apk` ফাইলটি ডিলিট করে দিন, এবং উপরের **১ নম্বর লিংক** ([**🚀 Open Verified APK Downloader (Link 1)**](https://htmlpreview.github.io/?https://github.com/mobarak6622/VideoX-AI/blob/main/download.html))-এ ট্যাপ করুন।
-3. পেজটি ওপেন হলেই স্বয়ংক্রিয়ভাবে ১০০% ভেরিফাইড **`VideoX-AI-v1.0.0.apk` (22.87 MB)** আপনার ফোনে ডাউনলোড হয়ে যাবে এবং কোনো ত্রুটি ছাড়াই ইনস্টল হবে!
+আপনার পাঠানো স্ক্রিনশটে দেখা যাচ্ছে আপনার ব্রাউজারে ইউআরএলটি ছিল:  
+👉 `github.com/mobarak6622/VideoX`
+
+**৪টি কারণে ৪০৪ (404 Not Found) আসে:**
+1. **ইউআরএল নামের পার্থক্য:** আপনার রিপোজিটরির নাম যদি `VideoX-AI` হয় এবং আপনি ব্রাউজারে `VideoX` লেখেন (বা উল্টোটা), তবে গিটহাব 404 দেখায়।
+2. **AI Studio থেকে এখনো Push না করা:** আপনি যদি এই AI Studio প্রজেক্টটি এখনো আপনার GitHub অ্যাকাউন্টে Push না করে থাকেন, তবে গিটহাবে এই রিপোজিটরিটি তৈরিই হয়নি।
+3. **Private Repository:** রিপোজিটরিটি যদি প্রাইভেট থাকে এবং আপনার ফোনে ব্রাউজারে লগইন না থাকে, তবুও গিটহাব 404 দেখায়।
 
 ---
 
-## ✨ প্রধান বৈশিষ্ট্যসমূহ (Core Features)
+## 📲 সরাসরি ফোনে APK ডাউনলোড করার ৩টি সহজ উপায়
 
-1. **100% On-Device AI Super Resolution (Up to 4K UHD 3840×2160):**
-   - **Standard Upscale**, **AI Upscale (ONNX Neural SR)** এবং **Maximum Quality** মোড।
-   - মেমোরি সেফ **Tiled Inference (128px / 192px / 256px)** এবং ওভারল্যাপিং ফেদার ব্লেন্ডিং।
-2. **Intelligent 14-Axis Auto Color Engine:**
-   - এক ক্লিকে **AUTO COLOR** এবং ১৪টি কালার কন্ট্রোল (Exposure, Brightness, Contrast, Saturation, Vibrance, White Balance, Temperature, Tint, Highlights, Shadows, Gamma, Black Level, White Level)।
-   - ৯টি স্টুডিও প্রিসেট: *Natural, Cinematic, Vivid, Warm, Cool, Portrait, Landscape, Film, Professional*।
-3. **FPS Conversion & RIFE Optical Flow Interpolation:**
-   - **24, 25, 30, 50, 60, 90, 120 FPS** সাপোর্ট এবং সিন-কাট ডিটেকশন (Scene-Cut Detection)।
-4. **Video Stabilization & Spatial-Temporal AI Denoising:**
-   - ক্যামেরা শেক রিমুভাল, ক্রপ কম্পেনসেশন এবং লো-লাইট নয়েজ রিমুভাল।
-5. **Professional Media3 Editor & Hardware MediaCodec Export:**
-   - **Before / After Split Slider**, ফ্রেম বাই ফ্রেম প্রিভিউ, **H.264 / H.265 (HEVC) / AV1** এনকোডিং এবং `Movies/VideoX AI` ফোল্ডারে অটোমেটিক গ্যালারি সেভ।
-6. **Bilingual Interface (English + বাংলা):**
-   - প্রিমিয়াম ডার্ক মোড (`#0B0D14`) এবং লাইট মোড সাপোর্ট।
+### উপায় ১: AI Studio থেকে সরাসরি ডাউনলোড (সবচেয়ে সহজ — গিটহাব ছাড়াই!)
+1. আপনার ব্রাউজারে **AI Studio** স্ক্রিনের ওপরের ডানদিকের **সেটিংস / থ্রি-ডট (⋮)** বা **Export** অপশনে ক্লিক করুন।
+2. সেখান থেকে **"Download APK"** অথবা **"Export ZIP"** নির্বাচন করুন।
+3. কোনো গিটহাব ঝামেলা ছাড়াই সরাসরি আপনার ফোনে ইনস্টলেবল ফাইল চলে আসবে!
+
+### উপায় ২: AI Studio থেকে গিটহাবে সঠিকভাবে Push করা
+1. AI Studio এর উপরের মেনুবার থেকে **GitHub** আইকনে ক্লিক করুন।
+2. আপনার গিটহাব অ্যাকাউন্টে রিপোজিটরিটি সঠিকভাবে **Sync / Push** করুন।
+3. Push সফল হলে গিটহাবে রিপোজিটরি লাইভ হয়ে যাবে এবং 404 আর আসবে না।
+
+### উপায় ৩: অ্যাপের ভেতর থেকে APK সেভ করা
+- অ্যাপটি চালু করে হোম স্ক্রিনের **"⬇️ Save APK File (VideoX_AI_v1.0.0.apk)"** বাটনে ট্যাপ করলেই ফোনের `Downloads` ফোল্ডারে APK কপি হয়ে যাবে।
+
+---
+
+## 🌟 নতুন CapCut Pro ও DSLR ফিচারসমূহ (New Pro Features)
+
+### 📸 ১. DSLR Camera Depth of Field & Bokeh Blur (f/1.2 – f/4.0)
+- **Cinematic Lens Simulation:** f/1.2, f/1.4, f/1.8, f/2.8 ও f/4.0 ভার্চুয়াল অ্যাপারচার।
+- **Portrait Subject Isolation:** স্কিন টোন ডিটেকশন ও ডেপথ এআই দিয়ে সাবজেক্টকে শার্প রেখে ব্যাকগ্রাউন্ডে প্রিমিয়াম ক্রিমি বোকেহ ব্লার তৈরি করে।
+- **Specular Bokeh Highlights:** ব্যাকগ্রাউন্ডের আলোর বিন্দুগুলোতে ডিএসএলআর লেন্সের মতো উজ্জ্বল বোকেহ বল (Circle of Confusion) তৈরি করে।
+
+### 🧠 ২. Gemini 3.8 Flash Cloud AI Director (ইন্টারনেট যুক্ত)
+- **Firebase AI Logic & App Check:** ক্লাউড ইন্টারনেট কানেকশন ব্যবহার করে প্রতিটি ফ্রেম বিশ্লেষণ করে।
+- **Hollywood Colorist Advice:** ভিডিওর লাইটিং ও সিন স্ক্যান করে স্বয়ংক্রিয়ভাবে সর্বোত্তম কালার টেম্পারেচার, ভাইব্র্যান্স, অ্যাপারচার ও কনট্রাস্ট প্ল্যান তৈরি করে দেয় (বাংলা ডিরেক্টর নোটস সহ)।
+
+### 🎞️ ৩. Media3 ExoPlayer ভিডিও প্রিভিউ স্ক্রিন
+- **Interactive Split Wipe Slider:** ভিডিও চলাকালীন বামে-ডানে টেনে Original ও AI Enhanced ভিডিও তুলনা।
+- **Dual Synchronized Side-by-Side:** পাশাপাশি দুটি স্ক্রিনে ফ্রেম-টু-ফ্রেম সিঙ্ক হয়ে ভিডিও প্লেব্যাক।
+- **Instant A/B Flip & Hold to Compare:** এক ক্লিকে অরিজিনাল ও প্রসেসড ভিডিও ফ্লিপ।
+- **Full Player Controls:** ০.৫x, ১.০x, ১.৫x, ২.০x স্পিড, মিলি-সেকেন্ড টাইমকোড সহ নিখুঁত সিকবার ও মিউট টগল।
+
+### ⚙️ ৪. WorkManager AI Enhancement Task Queue
+- **Background Processing:** দীর্ঘ বা উচ্চ রেজোলিউশনের ভিডিও ব্যাকগ্রাউন্ডে প্রসেস করার জন্য কিউ সিস্টেম।
+- **Notification Progress:** ভিডিও প্রসেসিং চলাকালে স্ট্যাটাস বারে রিয়েল-টাইম অগ্রগতি ও পার্সেন্টেজ দেখা যায়।
+- **Queue Manager Screen:** প্রসেসিং টাস্ক বাতিল, পুনর্চালনা বা সরাসরি প্রিভিউ করার সুবিধা।

@@ -216,15 +216,20 @@ fun VideoAnalysisScreen(
         }
 
         item {
-            OutlinedButton(
-                onClick = onOpenExport,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp)
-                    .testTag("btn_analysis_to_export"),
-                shape = RoundedCornerShape(14.dp)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                Text("Configure & Export MP4 Directly")
+                OutlinedButton(
+                    onClick = { onOpenExport() },
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(48.dp)
+                        .testTag("btn_analysis_to_export"),
+                    shape = RoundedCornerShape(14.dp)
+                ) {
+                    Text("Export MP4")
+                }
             }
         }
     }
@@ -469,6 +474,18 @@ fun VideoEditorScreen(
                 AssistChip(
                     onClick = { onNavigateTool(StudioScreen.SHARPEN_DETAIL) },
                     label = { Text("Sharpen: ${(pipeline.sharpen.strength * 100).roundToInt()}%") }
+                )
+                AssistChip(
+                    onClick = { onNavigateTool(StudioScreen.DSLR_BOKEH) },
+                    label = { Text("DSLR Bokeh: ${if (pipeline.bokeh.enabled) pipeline.bokeh.aperture else "Off"}") }
+                )
+                AssistChip(
+                    onClick = { onNavigateTool(StudioScreen.VIDEO_PREVIEW) },
+                    label = { Text("Media3 ExoPlayer Preview") }
+                )
+                AssistChip(
+                    onClick = { onNavigateTool(StudioScreen.QUEUE_MANAGER) },
+                    label = { Text("AI Queue Manager") }
                 )
             }
         }

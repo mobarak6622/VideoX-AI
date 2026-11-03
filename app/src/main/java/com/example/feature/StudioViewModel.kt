@@ -5,12 +5,14 @@ import android.graphics.Bitmap
 import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.core.ai.GeminiVideoDirectorEngine
 import com.example.core.ai.InstalledAiModelInfo
 import com.example.core.ai.LocalAiModelTask
 import com.example.core.ai.OnnxAiEngine
 import com.example.core.common.AppLanguage
 import com.example.core.common.ColorConfig
 import com.example.core.common.DenoiseConfig
+import com.example.core.common.DslrBokehConfig
 import com.example.core.common.EnhancementPipelineState
 import com.example.core.common.ExportConfig
 import com.example.core.common.FpsConfig
@@ -24,6 +26,8 @@ import com.example.core.gpu.DeviceCapabilitiesReport
 import com.example.core.gpu.DeviceCapabilityAnalyzer
 import com.example.core.media.SampleVideoGenerator
 import com.example.core.media.VideoAnalyzer
+import com.example.core.processing.AiVideoEnhancementQueueManager
+import com.example.core.processing.AiVideoQueueTask
 import com.example.core.processing.ColorCorrectionProcessor
 import com.example.core.processing.ProcessingProgressUpdate
 import com.example.core.processing.VideoProcessingEngine
@@ -51,9 +55,12 @@ enum class StudioScreen {
     ONBOARDING,
     HOME,
     VIDEO_ANALYSIS,
+    VIDEO_PREVIEW,
     EDITOR,
     AI_UPSCALER,
     AUTO_COLOR,
+    DSLR_BOKEH,
+    QUEUE_MANAGER,
     FPS_CONVERTER,
     STABILIZER,
     DENOISER,
@@ -96,6 +103,8 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
     private val sampleVideoGenerator = SampleVideoGenerator(context)
     private val mediaStoreSaver = MediaStoreVideoSaver(context)
     private val apkExportHelper = com.example.core.storage.ApkExportHelper(context)
+    private val queueManager = AiVideoEnhancementQueueManager.getInstance(context)
+    private val geminiDirector = GeminiVideoDirectorEngine(context)
     private val processingEngine = VideoProcessingEngine(
         context = context,
         onnxAiEngine = onnxAiEngine,
@@ -114,6 +123,14 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()
     )
+
+    val queueTasks: StateFlow<List<AiVideoQueueTask>> = queueManager.tasks
+
+    private val _lastProcessedVideoUri = MutableStateFlow<String?>(null)
+    val lastProcessedVideoUri: StateFlow<String?> = _lastProcessedVideoUri.asStateFlow()
+
+    private val _isAnalyzingWithGemini = MutableStateFlow(false)
+    val isAnalyzingWithGemini: StateFlow<Boolean> = _isAnalyzingWithGemini.asStateFlow()
 
     private val _currentScreen = MutableStateFlow(StudioScreen.HOME)
     val currentScreen: StateFlow<StudioScreen> = _currentScreen.asStateFlow()
@@ -377,6 +394,65 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
         recordUndoAndUpdate { it.copy(sharpen = config) }
     }
 
+    fun updateBokehConfig(config: DslrBokehConfig) {
+        recordUndoAndUpdate { it.copy(bokeh = config) }
+    }
+
+    fun applyGeminiCapCutProDirector() {
+        val meta = _currentVideo.value ?: return
+        val raw = _originalPreviewFrame.value ?: return
+        if (_isAnalyzingWithGemini.value) return
+        _isAnalyzingWithGemini.value = true
+        _statusBannerMessage.value = "Gemini AI Director analyzing lighting, skin tones & scene depth..."
+
+        viewModelScope.launch(Dispatchers.Default) {
+            val plan = geminiDirector.analyzeFrameAndGenerateProPlan(raw, "${meta.width}×${meta.height}")
+            _isAnalyzingWithGemini.value = false
+
+            recordUndoAndUpdate { state ->
+                state.copy(
+                    color = plan.recommendedColor,
+                    bokeh = plan.recommendedBokeh,
+                    sharpen = plan.recommendedSharpen,
+                    aiDirector = state.aiDirector.copy(
+                        activeGenrePreset = plan.genreTitle,
+                        directorNotes = plan.directorAdviceBengali
+                    )
+                )
+            }
+
+            _statusBannerMessage.value = "CapCut Pro AI Applied: ${plan.genreTitle} • ${plan.directorAdviceBengali}"
+        }
+    }
+
+    fun queueCurrentVideoForEnhancement() {
+        val meta = _currentVideo.value
+        if (meta == null || !meta.isSupported) {
+            _statusBannerMessage.value = "Please select a valid video before queueing."
+            return
+        }
+        val taskId = queueManager.enqueueEnhancementTask(
+            sourceUri = Uri.parse(meta.uriString),
+            fileName = meta.fileName,
+            pipeline = _pipeline.value
+        )
+        _statusBannerMessage.value = "Added '${meta.fileName}' to Background AI Processing Queue."
+        navigateTo(StudioScreen.QUEUE_MANAGER)
+    }
+
+    fun cancelQueueTask(taskId: String) {
+        queueManager.cancelTask(taskId)
+    }
+
+    fun removeQueueTask(taskId: String) {
+        queueManager.removeTask(taskId)
+    }
+
+    fun clearCompletedQueueTasks() {
+        queueManager.clearCompleted()
+        _statusBannerMessage.value = "Cleared completed queue jobs."
+    }
+
     fun updateExportConfig(config: ExportConfig) {
         recordUndoAndUpdate { it.copy(export = config) }
     }
@@ -479,6 +555,7 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
                             lastCheckpointFrame = _processingState.value.totalFrames
                         )
                     )
+                    _lastProcessedVideoUri.value = saved.galleryUri.toString()
                     _processingState.update {
                         it.copy(
                             isRunning = false,

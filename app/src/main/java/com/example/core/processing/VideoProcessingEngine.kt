@@ -92,6 +92,13 @@ class VideoProcessingEngine(
             working = graded
         }
 
+        // 3.5. CapCut Pro DSLR Camera Bokeh & Portrait Depth Blur
+        if (pipeline.bokeh.enabled) {
+            val bokehApplied = DslrBokehProcessor.applyDslrBokeh(working, pipeline.bokeh)
+            if (bokehApplied !== working) working.recycle()
+            working = bokehApplied
+        }
+
         // 4. AI Super Resolution / Maximum Quality ONNX pass
         if (pipeline.upscale.mode == UpscaleMode.AI_SUPER_RESOLUTION ||
             pipeline.upscale.mode == UpscaleMode.MAXIMUM_QUALITY
@@ -391,6 +398,13 @@ class VideoProcessingEngine(
                             workingFrame = graded
                         }
 
+                        // Step 4.5: CapCut Pro DSLR Camera Bokeh & Portrait Depth Blur
+                        if (pipeline.bokeh.enabled) {
+                            val bokehApplied = DslrBokehProcessor.applyDslrBokeh(workingFrame, pipeline.bokeh)
+                            if (bokehApplied !== workingFrame) workingFrame.recycle()
+                            workingFrame = bokehApplied
+                        }
+
                         // Step 5: Upscaling & Tiled Local ONNX Super Resolution
                         if (pipeline.upscale.mode == UpscaleMode.AI_SUPER_RESOLUTION ||
                             pipeline.upscale.mode == UpscaleMode.MAXIMUM_QUALITY
@@ -569,6 +583,7 @@ class VideoProcessingEngine(
         if (pipeline.stabilize.strength != FilterStrength.OFF) activeStages.add("Stabilize")
         if (pipeline.denoise.strength != FilterStrength.OFF) activeStages.add("Denoise")
         if (pipeline.color.enabled || pipeline.color.autoColor) activeStages.add("Color Engine")
+        if (pipeline.bokeh.enabled) activeStages.add("DSLR Bokeh (${pipeline.bokeh.aperture})")
         when (pipeline.upscale.mode) {
             UpscaleMode.AI_SUPER_RESOLUTION -> activeStages.add("ONNX AI SR")
             UpscaleMode.MAXIMUM_QUALITY -> activeStages.add("Max-Q Tiled AI")

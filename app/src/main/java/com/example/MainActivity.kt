@@ -65,14 +65,17 @@ import com.example.feature.home.OnboardingScreen
 import com.example.feature.home.ToolsHubScreen
 import com.example.feature.importer.VideoAnalysisScreen
 import com.example.feature.importer.VideoEditorScreen
+import com.example.feature.importer.VideoPreviewScreen
 import com.example.feature.projects.AiModelManagerScreen
 import com.example.feature.projects.DeviceCompatibilityScreen
 import com.example.feature.projects.PrivacyInfoScreen
 import com.example.feature.projects.ProjectHistoryScreen
+import com.example.feature.projects.QueueManagerScreen
 import com.example.feature.projects.SettingsScreen
 import com.example.feature.upscaler.AiUpscalerScreen
 import com.example.feature.upscaler.AutoColorScreen
 import com.example.feature.upscaler.DenoiserScreen
+import com.example.feature.upscaler.DslrBokehScreen
 import com.example.feature.upscaler.FpsConverterScreen
 import com.example.feature.upscaler.SharpenDetailScreen
 import com.example.feature.upscaler.StabilizerScreen
@@ -82,6 +85,8 @@ import com.example.ui.theme.VideoXAITheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Configure Firebase App Check with launch intent before UI or Firebase operations
+        com.example.core.ai.configureAppCheck(this, intent)
         enableEdgeToEdge()
         setContent {
             val studioViewModel: StudioViewModel = viewModel()
@@ -114,6 +119,8 @@ fun VideoXStudioApp(viewModel: StudioViewModel) {
     val canRedo by viewModel.canRedo.collectAsStateWithLifecycle()
     val statusBanner by viewModel.statusBannerMessage.collectAsStateWithLifecycle()
     val isGeneratingSample by viewModel.isGeneratingSample.collectAsStateWithLifecycle()
+    val queueTasks by viewModel.queueTasks.collectAsStateWithLifecycle()
+    val lastProcessedVideoUri by viewModel.lastProcessedVideoUri.collectAsStateWithLifecycle()
 
     var pendingModelTaskForImport by remember { mutableStateOf<LocalAiModelTask?>(null) }
 
@@ -336,6 +343,15 @@ fun VideoXStudioApp(viewModel: StudioViewModel) {
                         }
                     )
 
+                    StudioScreen.VIDEO_PREVIEW -> VideoPreviewScreen(
+                        metadata = currentVideo,
+                        processedVideoUriString = lastProcessedVideoUri,
+                        pipeline = pipeline,
+                        onNavigateToEditor = { viewModel.navigateTo(StudioScreen.EDITOR) },
+                        onNavigateToExport = { viewModel.navigateTo(StudioScreen.EXPORT_SETTINGS) },
+                        onQueueBackgroundTask = { viewModel.queueCurrentVideoForEnhancement() }
+                    )
+
                     StudioScreen.EDITOR -> VideoEditorScreen(
                         strings = strings,
                         metadata = currentVideo,
@@ -390,6 +406,14 @@ fun VideoXStudioApp(viewModel: StudioViewModel) {
                         onUpdate = { viewModel.updateSharpenConfig(it) }
                     )
 
+                    StudioScreen.DSLR_BOKEH -> DslrBokehScreen(
+                        config = pipeline.bokeh,
+                        originalFrame = originalFrame,
+                        enhancedFrame = enhancedFrame,
+                        onUpdate = { viewModel.updateBokehConfig(it) },
+                        onApplyAiDirector = { viewModel.applyGeminiCapCutProDirector() }
+                    )
+
                     StudioScreen.EXPORT_SETTINGS -> ExportSettingsScreen(
                         metadata = currentVideo,
                         pipeline = pipeline,
@@ -436,6 +460,18 @@ fun VideoXStudioApp(viewModel: StudioViewModel) {
                             safOnnxModelLauncher.launch(arrayOf("*/*"))
                         },
                         onResetBundledModel = { viewModel.resetModelToBundled(it) }
+                    )
+
+                    StudioScreen.QUEUE_MANAGER -> QueueManagerScreen(
+                        tasks = queueTasks,
+                        onCancelTask = { viewModel.cancelQueueTask(it) },
+                        onRemoveTask = { viewModel.removeQueueTask(it) },
+                        onClearCompleted = { viewModel.clearCompletedQueueTasks() },
+                        onOpenVideoPreview = { uriStr ->
+                            viewModel.importVideoUri(android.net.Uri.parse(uriStr), navigateToAnalysis = false)
+                            viewModel.navigateTo(StudioScreen.VIDEO_PREVIEW)
+                        },
+                        onNavigateBack = { viewModel.navigateBack() }
                     )
 
                     StudioScreen.DEVICE_COMPATIBILITY -> DeviceCompatibilityScreen(

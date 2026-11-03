@@ -2,9 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Strictly 100% Offline Privacy Guarantee: Remove any transitive INTERNET or ACCESS_NETWORK_STATE permissions -->
-    <uses-permission android:name="android.permission.INTERNET" tools:node="remove" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" tools:node="remove" />
+    <!-- Internet & Network State for CapCut Pro-grade Cloud AI Video Upscaling & Gemini AI Director -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <!-- Foreground Service & Notifications for Background Video Processing Queue -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
