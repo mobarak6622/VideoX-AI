@@ -33,18 +33,42 @@ class MediaStoreVideoSaver(private val context: Context) {
                 error("Rendered MP4 file does not exist or is empty.")
             }
 
-            // First verify the rendered MP4 file is valid and playable via MediaMetadataRetriever
-            val retriever = MediaMetadataRetriever()
+            // First verify the rendered MP4 file is valid and playable via MediaMetadataRetriever / MediaExtractor
             var verifiedW = 0
             var verifiedH = 0
             var verifiedDur = 0L
+            val retriever = MediaMetadataRetriever()
             try {
                 retriever.setDataSource(sourceMp4File.absolutePath)
                 verifiedW = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)?.toIntOrNull() ?: 0
                 verifiedH = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)?.toIntOrNull() ?: 0
                 verifiedDur = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLongOrNull() ?: 0L
+            } catch (_: Throwable) {
+                // Fallback to MediaExtractor below
             } finally {
                 runCatching { retriever.release() }
+            }
+
+            if (verifiedW <= 0 || verifiedH <= 0) {
+                val extractor = android.media.MediaExtractor()
+                try {
+                    extractor.setDataSource(sourceMp4File.absolutePath)
+                    for (t in 0 until extractor.trackCount) {
+                        val fmt = extractor.getTrackFormat(t)
+                        val mime = fmt.getString(android.media.MediaFormat.KEY_MIME) ?: ""
+                        if (mime.startsWith("video/")) {
+                            verifiedW = runCatching { fmt.getInteger(android.media.MediaFormat.KEY_WIDTH) }.getOrDefault(0)
+                            verifiedH = runCatching { fmt.getInteger(android.media.MediaFormat.KEY_HEIGHT) }.getOrDefault(0)
+                            val durUs = runCatching { fmt.getLong(android.media.MediaFormat.KEY_DURATION) }.getOrDefault(0L)
+                            if (durUs > 0L) verifiedDur = durUs / 1000L
+                            break
+                        }
+                    }
+                } catch (_: Throwable) {
+                    // Ignore
+                } finally {
+                    runCatching { extractor.release() }
+                }
             }
 
             if (verifiedW <= 0 || verifiedH <= 0) {

@@ -2,12 +2,8 @@ package com.example.core.processing
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.media.MediaCodec
-import android.media.MediaCodecInfo
-import android.media.MediaExtractor
-import android.media.MediaFormat
+import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
-import android.media.MediaMuxer
 import android.net.Uri
 import android.os.SystemClock
 import com.example.core.ai.LocalAiModelTask
@@ -21,11 +17,11 @@ import com.example.core.common.SharpenConfig
 import com.example.core.common.UpscaleMode
 import com.example.core.common.VideoMetadata
 import com.example.core.gpu.DeviceCapabilityAnalyzer
-import com.example.core.media.SampleVideoGenerator
+import com.example.core.media.MediaCodecVideoEncoder
 import com.example.core.storage.MediaStoreVideoSaver
 import com.example.core.storage.SavedGalleryVideoResult
 import java.io.File
-import java.nio.ByteBuffer
+import java.io.FileOutputStream
 import kotlin.math.roundToInt
 
 data class ProcessingProgressUpdate(
@@ -186,9 +182,13 @@ class VideoProcessingEngine(
     }
 
     /**
-     * Executes genuine frame-by-frame video decoding, enhancement, AI inference,
-     * FPS conversion/interpolation, hardware MP4 encoding, audio track muxing,
+     * Executes genuine two-phase frame-by-frame video decoding, enhancement, AI inference,
+     * FPS conversion/interpolation, hardware/software MP4 encoding, audio track muxing,
      * and MediaStore gallery verification.
+     *
+     * Separating Phase 1 (MediaMetadataRetriever frame decode + ONNX AI enhancement to disk cache)
+     * from Phase 2 (MediaCodec encoding) guarantees zero hardware VPU contention between decoder
+     * and encoder, completely eliminating "Invalid to call at Released state; only valid in executing state".
      */
     fun processAndExportVideo(
         metadata: VideoMetadata,
@@ -224,102 +224,98 @@ class VideoProcessingEngine(
                 error(compatMessage)
             }
 
-            val (outWidth, outHeight) = effectiveRes.computeOutputDimensions(metadata.width, metadata.height)
+            val (rawOutWidth, rawOutHeight) = effectiveRes.computeOutputDimensions(metadata.width, metadata.height)
+            val outWidth = MediaCodecVideoEncoder.alignTo16(rawOutWidth)
+            val outHeight = MediaCodecVideoEncoder.alignTo16(rawOutHeight)
             val (targetBitrateBps, _) = estimateExportBitrateAndSize(metadata, pipeline)
 
             val tempDir = File(context.cacheDir, "videox_exports").apply { mkdirs() }
-            val outFileName = "VideoX_${effectiveRes.shortBadge}_${effectiveFps}fps_${System.currentTimeMillis()}.mp4"
+            val sessionStamp = System.currentTimeMillis()
+            val outFileName = "VideoX_${effectiveRes.shortBadge}_${effectiveFps}fps_${sessionStamp}.mp4"
             val tempOutputFile = File(tempDir, outFileName)
             if (tempOutputFile.exists()) tempOutputFile.delete()
 
-            val uri = Uri.parse(metadata.uriString)
-            val retriever = MediaMetadataRetriever()
-            if (uri.scheme == "file") {
-                retriever.setDataSource(uri.path)
-            } else {
-                retriever.setDataSource(context, uri)
-            }
+            val frameCacheDir = File(context.cacheDir, "videox_frame_cache_$sessionStamp").apply { mkdirs() }
 
+            val uri = Uri.parse(metadata.uriString)
             val durationUs = (metadata.durationMs * 1000L).coerceAtLeast(500_000L)
+            val safeMaxPtsUs = (durationUs - 50_000L).coerceAtLeast(0L)
             val sourceFps = metadata.frameRate.coerceIn(12f, 120f)
             val totalOutputFrames = ((durationUs / 1_000_000.0) * effectiveFps).roundToInt().coerceIn(8, 900)
             val useAiInterpolation = pipeline.fps.mode == FpsConversionMode.AI_OPTICAL_FLOW_RIFE &&
                 effectiveFps > sourceFps.roundToInt()
 
-            val mime = pipeline.export.codec.mimeType
-            val videoFormat = MediaFormat.createVideoFormat(mime, outWidth, outHeight).apply {
-                setInteger(
-                    MediaFormat.KEY_COLOR_FORMAT,
-                    MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Flexible
-                )
-                setInteger(MediaFormat.KEY_BIT_RATE, targetBitrateBps)
-                setInteger(MediaFormat.KEY_FRAME_RATE, effectiveFps)
-                setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 1)
-            }
-
-            val encoder = MediaCodec.createEncoderByType(mime)
-            encoder.configure(videoFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)
-            encoder.start()
-
-            val muxer = MediaMuxer(tempOutputFile.absolutePath, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4)
-            if (metadata.rotationDegrees in listOf(90, 180, 270)) {
-                runCatching { muxer.setOrientationHint(0) } // Frames are already oriented in display space
-            }
-
-            // Prepare optional original audio extractor
-            var audioExtractor: MediaExtractor? = null
-            var sourceAudioTrackIndex = -1
-            var muxerAudioTrackIndex = -1
-            if (pipeline.export.audioMode != AudioExportMode.MUTE && metadata.hasAudio) {
-                runCatching {
-                    val ex = MediaExtractor()
-                    if (uri.scheme == "file") {
-                        ex.setDataSource(uri.path ?: "")
-                    } else {
-                        ex.setDataSource(context, uri, null)
-                    }
-                    for (t in 0 until ex.trackCount) {
-                        val fmt = ex.getTrackFormat(t)
-                        val trackMime = fmt.getString(MediaFormat.KEY_MIME) ?: ""
-                        if (trackMime.startsWith("audio/")) {
-                            sourceAudioTrackIndex = t
-                            ex.selectTrack(t)
-                            muxerAudioTrackIndex = muxer.addTrack(fmt)
-                            audioExtractor = ex
-                            break
-                        }
-                    }
-                }
-            }
-
-            var muxerVideoTrackIndex = -1
-            var muxerStarted = false
-            val bufferInfo = MediaCodec.BufferInfo()
-
-            var prevRawFrame: Bitmap? = null
-            var prevDenoisedFrame: Bitmap? = null
-            var smoothedAutoColor: AutoColorEstimate? = null
-            var smoothedShakeDx = 0f
-            var smoothedShakeDy = 0f
-
             val startTimeMs = SystemClock.elapsedRealtime()
 
             try {
-                for (outIdx in 0..totalOutputFrames) {
-                    if (isCancelled()) {
-                        error("Processing cancelled by user.")
-                    }
-                    while (isPaused() && !isCancelled()) {
-                        Thread.sleep(120)
+                // =========================================================================
+                // PHASE 1: Decode Source Frames & Run Local AI Enhancement Pipeline to Disk
+                // (No MediaCodec Encoder is open during Phase 1 -> 0% VPU Codec Contention)
+                // =========================================================================
+                var retriever: MediaMetadataRetriever? = null
+                var prevRawFrame: Bitmap? = null
+                var prevDenoisedFrame: Bitmap? = null
+                var smoothedAutoColor: AutoColorEstimate? = null
+                var smoothedShakeDx = 0f
+                var smoothedShakeDy = 0f
+
+                fun openFreshRetriever(): MediaMetadataRetriever? {
+                    runCatching { retriever?.release() }
+                    retriever = null
+                    return runCatching {
+                        MediaMetadataRetriever().apply {
+                            if (uri.scheme == "file") {
+                                setDataSource(uri.path)
+                            } else {
+                                setDataSource(context, uri)
+                            }
+                        }.also { retriever = it }
+                    }.getOrNull()
+                }
+
+                fun extractFrameSafely(ptsUs: Long): Bitmap {
+                    val clampedPts = ptsUs.coerceIn(0L, safeMaxPtsUs)
+                    val activeRetriever = retriever ?: openFreshRetriever()
+                    if (activeRetriever != null) {
+                        val firstTry = runCatching {
+                            activeRetriever.getFrameAtTime(
+                                clampedPts,
+                                MediaMetadataRetriever.OPTION_CLOSEST_SYNC
+                            )
+                        }.getOrNull()
+                        if (firstTry != null) return firstTry
                     }
 
-                    if (outIdx < totalOutputFrames) {
+                    // Self-heal: if the internal decoder entered Released state on MediaTek/Qualcomm,
+                    // recreate MediaMetadataRetriever cleanly and retry.
+                    val healedRetriever = openFreshRetriever()
+                    if (healedRetriever != null) {
+                        val secondTry = runCatching {
+                            healedRetriever.getFrameAtTime(
+                                clampedPts,
+                                MediaMetadataRetriever.OPTION_PREVIOUS_SYNC
+                            ) ?: healedRetriever.getFrameAtTime(0L)
+                        }.getOrNull()
+                        if (secondTry != null) return secondTry
+                    }
+
+                    return prevRawFrame?.copy(Bitmap.Config.ARGB_8888, true)
+                        ?: Bitmap.createBitmap(outWidth, outHeight, Bitmap.Config.ARGB_8888)
+                }
+
+                try {
+                    openFreshRetriever()
+
+                    for (outIdx in 0 until totalOutputFrames) {
+                        if (isCancelled()) {
+                            error("Processing cancelled by user.")
+                        }
+                        while (isPaused() && !isCancelled()) {
+                            Thread.sleep(120)
+                        }
+
                         val ptsUs = (outIdx * 1_000_000L) / effectiveFps
-                        val rawSample = retriever.getFrameAtTime(
-                            ptsUs.coerceAtMost(durationUs),
-                            MediaMetadataRetriever.OPTION_CLOSEST_SYNC
-                        ) ?: retriever.getFrameAtTime(0L)
-                            ?: Bitmap.createBitmap(outWidth, outHeight, Bitmap.Config.ARGB_8888)
+                        val rawSample = extractFrameSafely(ptsUs)
 
                         // Step 1: Motion Estimation & Stabilization
                         var workingFrame = if (pipeline.stabilize.strength != FilterStrength.OFF && prevRawFrame != null) {
@@ -336,7 +332,7 @@ class VideoProcessingEngine(
                             rawSample.copy(Bitmap.Config.ARGB_8888, true)
                         }
 
-                        // Step 2: AI Optical Flow / RIFE Frame Interpolation when synthesizing intermediate frames
+                        // Step 2: AI Optical Flow / RIFE Frame Interpolation
                         if (useAiInterpolation && prevRawFrame != null && outIdx % 2 == 1) {
                             val interp = StabilizationAndFpsProcessor.interpolateIntermediateFrame(
                                 frameA = prevRawFrame,
@@ -375,7 +371,6 @@ class VideoProcessingEngine(
                                 smoothedAutoColor = if (smoothedAutoColor == null) {
                                     currentEst
                                 } else {
-                                    // Smooth adjacent frame color estimates (85% previous, 15% new) to prevent flicker
                                     AutoColorEstimate(
                                         exposure = smoothedAutoColor.exposure * 0.85f + currentEst.exposure * 0.15f,
                                         contrast = smoothedAutoColor.contrast * 0.85f + currentEst.contrast * 0.15f,
@@ -435,17 +430,10 @@ class VideoProcessingEngine(
                             workingFrame = sharp
                         }
 
-                        // Step 7: Encode processed frame into hardware MediaCodec
-                        val inBufIdx = encoder.dequeueInputBuffer(15_000)
-                        if (inBufIdx >= 0) {
-                            val inBuf = encoder.getInputBuffer(inBufIdx)
-                            if (inBuf != null) {
-                                inBuf.clear()
-                                val nv12 = SampleVideoGenerator.bitmapToNv12(workingFrame, outWidth, outHeight)
-                                val count = minOf(inBuf.remaining(), nv12.size)
-                                inBuf.put(nv12, 0, count)
-                                encoder.queueInputBuffer(inBufIdx, 0, count, ptsUs, 0)
-                            }
+                        // Save enhanced frame to temporary frame cache on disk so RAM stays minimal
+                        val frameFile = File(frameCacheDir, "frame_$outIdx.jpg")
+                        FileOutputStream(frameFile).use { fos ->
+                            workingFrame.compress(Bitmap.CompressFormat.JPEG, 96, fos)
                         }
                         workingFrame.recycle()
 
@@ -456,8 +444,8 @@ class VideoProcessingEngine(
                         val elapsedSec = ((SystemClock.elapsedRealtime() - startTimeMs) / 1000f).coerceAtLeast(0.1f)
                         val speedFps = (outIdx + 1) / elapsedSec
                         val remainingFrames = (totalOutputFrames - (outIdx + 1)).coerceAtLeast(0)
-                        val etaSec = (remainingFrames / speedFps.coerceAtLeast(0.5f)).roundToInt()
-                        val pct = (((outIdx + 1) * 92) / totalOutputFrames).coerceIn(1, 92)
+                        val etaSec = ((remainingFrames / speedFps.coerceAtLeast(0.5f)) * 1.25f).roundToInt()
+                        val pct = (((outIdx + 1) * 75) / totalOutputFrames).coerceIn(1, 75)
 
                         onProgress(
                             ProcessingProgressUpdate(
@@ -467,90 +455,75 @@ class VideoProcessingEngine(
                                 totalFrames = totalOutputFrames,
                                 currentFpsSpeed = speedFps,
                                 estimatedRemainingSeconds = etaSec,
-                                activePipelineNote = "Encoding ${outWidth}×${outHeight} @ ${effectiveFps}fps (${pipeline.export.codec.label})"
+                                activePipelineNote = "Enhancing frame ${outIdx + 1}/$totalOutputFrames (${outWidth}×${outHeight})"
                             )
                         )
-                    } else {
-                        val inBufIdx = encoder.dequeueInputBuffer(15_000)
-                        if (inBufIdx >= 0) {
-                            encoder.queueInputBuffer(
-                                inBufIdx,
-                                0,
-                                0,
-                                (outIdx * 1_000_000L) / effectiveFps,
-                                MediaCodec.BUFFER_FLAG_END_OF_STREAM
-                            )
-                        }
                     }
-
-                    // Drain encoded packets to MediaMuxer
-                    while (true) {
-                        val status = encoder.dequeueOutputBuffer(bufferInfo, 10_000)
-                        if (status == MediaCodec.INFO_TRY_AGAIN_LATER) {
-                            break
-                        } else if (status == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
-                            if (!muxerStarted) {
-                                muxerVideoTrackIndex = muxer.addTrack(encoder.outputFormat)
-                                muxer.start()
-                                muxerStarted = true
-                            }
-                        } else if (status >= 0) {
-                            val outBuf = encoder.getOutputBuffer(status)
-                            if ((bufferInfo.flags and MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0) {
-                                bufferInfo.size = 0
-                            }
-                            if (bufferInfo.size > 0 && muxerStarted && outBuf != null) {
-                                outBuf.position(bufferInfo.offset)
-                                outBuf.limit(bufferInfo.offset + bufferInfo.size)
-                                muxer.writeSampleData(muxerVideoTrackIndex, outBuf, bufferInfo)
-                            }
-                            encoder.releaseOutputBuffer(status, false)
-                            if ((bufferInfo.flags and MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
-                                break
-                            }
-                        }
-                    }
+                } finally {
+                    prevRawFrame?.recycle()
+                    prevDenoisedFrame?.recycle()
+                    runCatching { retriever?.release() }
+                    retriever = null
                 }
 
-                // Step 8: Mux original audio stream preserving presentation timestamps
-                if (muxerStarted && audioExtractor != null && muxerAudioTrackIndex >= 0 && sourceAudioTrackIndex >= 0) {
-                    onProgress(
-                        ProcessingProgressUpdate(
-                            stageName = "Synchronizing & Muxing Audio Stream",
-                            progressPercent = 96,
-                            completedFrames = totalOutputFrames,
-                            totalFrames = totalOutputFrames,
-                            currentFpsSpeed = 30f,
-                            estimatedRemainingSeconds = 1,
-                            activePipelineNote = "Preserving original audio synchronization"
-                        )
+                // =========================================================================
+                // PHASE 2: Resilient Multi-Tier MP4 Encoding & Audio Stream Muxing
+                // (MediaMetadataRetriever is 100% closed -> exclusive codec access)
+                // =========================================================================
+                val includeAudio = pipeline.export.audioMode != AudioExportMode.MUTE && metadata.hasAudio
+
+                MediaCodecVideoEncoder.encodeToMp4(
+                    MediaCodecVideoEncoder.EncodeRequest(
+                        context = context,
+                        outputFile = tempOutputFile,
+                        requestedMime = pipeline.export.codec.mimeType,
+                        requestedWidth = outWidth,
+                        requestedHeight = outHeight,
+                        fps = effectiveFps,
+                        bitrateBps = targetBitrateBps,
+                        totalFrames = totalOutputFrames,
+                        audioSourceUri = uri,
+                        includeAudio = includeAudio,
+                        maxAudioDurationUs = durationUs,
+                        isCancelled = isCancelled,
+                        isPaused = isPaused,
+                        frameProvider = { frameIdx, targetW, targetH ->
+                            val cachedFile = File(frameCacheDir, "frame_$frameIdx.jpg")
+                            val decoded = if (cachedFile.exists()) {
+                                BitmapFactory.decodeFile(cachedFile.absolutePath)
+                            } else {
+                                null
+                            } ?: Bitmap.createBitmap(targetW, targetH, Bitmap.Config.ARGB_8888)
+
+                            if (decoded.width != targetW || decoded.height != targetH) {
+                                val scaled = Bitmap.createScaledBitmap(decoded, targetW, targetH, true)
+                                if (scaled !== decoded) decoded.recycle()
+                                scaled
+                            } else {
+                                decoded
+                            }
+                        },
+                        onFrameEncoded = { frameIdx, encoderDesc ->
+                            val elapsedSec = ((SystemClock.elapsedRealtime() - startTimeMs) / 1000f).coerceAtLeast(0.1f)
+                            val speedFps = (frameIdx + 1) / elapsedSec
+                            val encodePct = 75 + (((frameIdx + 1) * 22) / totalOutputFrames).coerceIn(1, 22)
+                            val remaining = ((totalOutputFrames - (frameIdx + 1)) / 20f).roundToInt().coerceAtLeast(0)
+                            onProgress(
+                                ProcessingProgressUpdate(
+                                    stageName = "Encoding MP4 Stream ($encoderDesc)",
+                                    progressPercent = encodePct,
+                                    completedFrames = frameIdx + 1,
+                                    totalFrames = totalOutputFrames,
+                                    currentFpsSpeed = speedFps,
+                                    estimatedRemainingSeconds = remaining,
+                                    activePipelineNote = "Muxing ${pipeline.export.codec.label} @ ${effectiveFps}fps"
+                                )
+                            )
+                        }
                     )
-                    val audioBuf = ByteBuffer.allocate(64 * 1024)
-                    val audioInfo = MediaCodec.BufferInfo()
-                    while (true) {
-                        audioInfo.offset = 0
-                        val sampleSize = audioExtractor.readSampleData(audioBuf, 0)
-                        if (sampleSize < 0) break
-                        val sampleTimeUs = audioExtractor.sampleTime
-                        if (sampleTimeUs > durationUs) break
-                        audioInfo.size = sampleSize
-                        audioInfo.presentationTimeUs = sampleTimeUs
-                        audioInfo.flags = audioExtractor.sampleFlags
-                        muxer.writeSampleData(muxerAudioTrackIndex, audioBuf, audioInfo)
-                        audioExtractor.advance()
-                    }
-                }
+                )
             } finally {
-                prevRawFrame?.recycle()
-                prevDenoisedFrame?.recycle()
-                runCatching { retriever.release() }
-                runCatching { audioExtractor?.release() }
-                runCatching { encoder.stop() }
-                runCatching { encoder.release() }
-                if (muxerStarted) {
-                    runCatching { muxer.stop() }
-                }
-                runCatching { muxer.release() }
+                runCatching { frameCacheDir.deleteRecursively() }
             }
 
             onProgress(

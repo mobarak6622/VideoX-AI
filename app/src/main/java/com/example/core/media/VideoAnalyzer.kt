@@ -139,7 +139,7 @@ class VideoAnalyzer(private val context: Context) {
                 isSupported = true,
                 unsupportedReason = null
             )
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             return VideoMetadata(
                 uriString = uri.toString(),
                 fileName = resolvedName,
@@ -165,21 +165,33 @@ class VideoAnalyzer(private val context: Context) {
     }
 
     fun extractFrameAt(uri: Uri, timeUs: Long, maxDimension: Int = 720): Bitmap? {
-        val retriever = MediaMetadataRetriever()
+        var retriever: MediaMetadataRetriever? = null
         return try {
+            retriever = MediaMetadataRetriever()
             if (uri.scheme == "file") {
                 retriever.setDataSource(uri.path)
             } else {
                 retriever.setDataSource(context, uri)
             }
-            val raw = retriever.getFrameAtTime(timeUs, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
-                ?: retriever.getFrameAtTime(0L)
-                ?: return null
+            val durationMs = runCatching {
+                retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLongOrNull() ?: 0L
+            }.getOrDefault(0L)
+            val safeMaxUs = ((durationMs * 1000L) - 50_000L).coerceAtLeast(0L)
+            val clampedTimeUs = if (durationMs > 0L) timeUs.coerceIn(0L, safeMaxUs) else timeUs.coerceAtLeast(0L)
+
+            val raw = runCatching {
+                retriever.getFrameAtTime(clampedTimeUs, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
+            }.getOrNull() ?: runCatching {
+                retriever.getFrameAtTime(clampedTimeUs, MediaMetadataRetriever.OPTION_PREVIOUS_SYNC)
+            }.getOrNull() ?: runCatching {
+                retriever.getFrameAtTime(0L)
+            }.getOrNull() ?: return null
+
             scaleDownIfNeeded(raw, maxDimension)
-        } catch (_: Exception) {
+        } catch (_: Throwable) {
             null
         } finally {
-            runCatching { retriever.release() }
+            runCatching { retriever?.release() }
         }
     }
 

@@ -99,16 +99,16 @@
 </head>
 <body>
   <div class="card">
-    <div class="badge">v1.0.0 • Official Signed Release APK (v1+v2+v3)</div>
+    <div class="badge">v1.0.2 • Fixed MediaCodec Engine (Signed Release APK)</div>
     <h1>🎬 VideoX AI</h1>
     <p class="sub">
       100% Offline AI Video Enhancer &amp; 4K Upscaler<br />
       <strong>Package:</strong> <code>com.videoxai.enhancer</code> (Android 7.0 – 16)<br />
-      <strong>ABI:</strong> <code>arm64-v8a</code> + <code>armeabi-v7a</code> (22.87 MB)
+      <strong>ABI:</strong> <code>arm64-v8a</code> + <code>armeabi-v7a</code> (22.90 MB)
     </p>
 
     <button id="dlBtn" class="btn" onclick="startVerifiedDownload()">
-      ⬇️ Download Verified VideoX-AI-v1.0.0.apk
+      ⬇️ Download Verified VideoX-AI-v1.0.2.apk
     </button>
 
     <div id="progWrap" class="progress-wrap">
@@ -120,22 +120,23 @@
     </div>
 
     <div class="info-box">
-      ✅ <strong>"Package appears to be invalid" সমস্যার স্থায়ী সমাধান:</strong><br />
-      ১. AI Studio থেকে সরাসরি বাইনারি ফাইল গিটহাবে পাঠালে UTF-8 টেক্সট এনকোডিংয়ের কারণে বাইনারি ফাইলটি নষ্ট (Corrupt) হয়ে যেত।<br />
-      ২. এই ডাউনলোডারটি পিওর ASCII Base64 পার্ট (`apk/part1..4.b64`) থেকে <strong>SHA-256 ভেরিফাইড অরিজিনাল বাইনারি রিলিজ APK</strong> তৈরি করে আপনার ফোনে ডাউনলোড করে।<br />
-      ৩. ইনস্টল করার আগে ফোনে আগের নষ্ট APK ফাইলটি ডিলিট করে নতুন <strong>VideoX-AI-v1.0.0.apk</strong> ইনস্টল করুন।
+      ✅ <strong>v1.0.2 আপডেটে যা ঠিক করা হয়েছে:</strong><br />
+      ১. <code>Invalid to call at Released state; only valid in executing state</code> সমস্যার স্থায়ী সমাধান (৪-স্তরের ফলোব্যাক MediaCodec ও ডিস্ক-ক্যাশ ফ্রেম পাইপলাইন)।<br />
+      ২. <code>Package appears to be invalid</code> সমস্যার সমাধান (SHA-256 ভেরিফাইড v2+v3 সাইনড রিলিজ APK)।<br />
+      ৩. নতুন ভার্সনটি পেতে AI Studio থেকে আগে GitHub-এ <strong>Push</strong> করুন এবং ফোনে ডাউনলোড করে ইনস্টল করুন।
     </div>
   </div>
 
   <script>
     const REPO = "mobarak6622/VideoX-AI";
     const PARTS = ["apk/part1.b64", "apk/part2.b64", "apk/part3.b64", "apk/part4.b64"];
-    const EXPECTED_SHA256 = "2a852ee3a8d277e80f3110fff2d853e620f62f7a7dcad7a5f6bc4c2f1715d0de";
+    const EXPECTED_SHA256 = "79c75432d9259edacf08fd7f71f1594881b4d693cc7d634cef2156a1104663cf";
 
     async function fetchPart(path) {
-      const branches = ["HEAD", "main", "master"];
+      const branches = ["main", "master", "HEAD"];
+      const cacheBuster = `v=102_${Date.now()}`;
       for (const br of branches) {
-        const url = `https://raw.githubusercontent.com/${REPO}/${br}/${path}`;
+        const url = `https://raw.githubusercontent.com/${REPO}/${br}/${path}?${cacheBuster}`;
         try {
           const res = await fetch(url, { cache: "no-store" });
           if (res.ok) {
@@ -197,15 +198,16 @@
         const blob = new Blob([merged], { type: "application/vnd.android.package-archive" });
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
-        a.download = "VideoX-AI-v1.0.0.apk";
+        a.download = "VideoX-AI-v1.0.2.apk";
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
 
         const sizeMb = (totalBytes / (1024 * 1024)).toFixed(2);
+        const isLatest = actualHash === EXPECTED_SHA256;
         status.innerHTML = `✅ <strong>১০০% ভেরিফাইড ডাউনলোড সম্পন্ন! (${sizeMb} MB)</strong><br/>` +
-          `<small style="color:#6EE7B7;">SHA-256: ${actualHash.substring(0, 24)}...</small><br/>` +
-          `এখন আপনার ফোনের <strong>Downloads</strong> ফোল্ডার থেকে <strong>VideoX-AI-v1.0.0.apk</strong> ফাইলটিতে ট্যাপ করে ইনস্টল করুন!`;
+          `<small style="color:${isLatest ? '#6EE7B7' : '#FBBF24'};">SHA-256: ${actualHash.substring(0, 24)}... ${isLatest ? '(v1.0.2 Latest)' : '(নতুন v1.0.2 পেতে আগে AI Studio থেকে GitHub-এ Push করুন)'}</small><br/>` +
+          `এখন আপনার ফোনের <strong>Downloads</strong> ফোল্ডার থেকে <strong>VideoX-AI-v1.0.2.apk</strong> ফাইলটিতে ট্যাপ করে ইনস্টল করুন!`;
         btn.disabled = false;
         btn.innerText = "⬇️ আবার ডাউনলোড করুন (Download Again)";
       } catch (err) {

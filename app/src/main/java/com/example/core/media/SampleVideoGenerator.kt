@@ -8,10 +8,7 @@ import android.graphics.LinearGradient
 import android.graphics.Paint
 import android.graphics.RectF
 import android.graphics.Shader
-import android.media.MediaCodec
-import android.media.MediaCodecInfo
 import android.media.MediaFormat
-import android.media.MediaMuxer
 import android.net.Uri
 import java.io.File
 import kotlin.math.cos
@@ -19,7 +16,7 @@ import kotlin.math.sin
 import kotlin.random.Random
 
 /**
- * Generates a real, playable MP4 video clip on-device using Android MediaCodec and MediaMuxer.
+ * Generates a real, playable MP4 video clip on-device using MediaCodecVideoEncoder.
  * Includes moving cinema color targets, skin-tone patch, simulated camera shake, and low-light grain
  * so the user can test every enhancement pipeline (AI Upscale, Auto Color, Denoise, Stabilization,
  * FPS Interpolation, and 4K Export) immediately offline.
@@ -27,7 +24,7 @@ import kotlin.random.Random
 class SampleVideoGenerator(private val context: Context) {
 
     fun generateSampleMp4(
-        width: Int = 854,
+        width: Int = 848,
         height: Int = 480,
         fps: Int = 24,
         durationSeconds: Int = 2,
@@ -38,94 +35,32 @@ class SampleVideoGenerator(private val context: Context) {
             val outFile = File(outDir, fileName)
             if (outFile.exists()) outFile.delete()
 
-            val evenW = if (width % 2 == 0) width else width + 1
-            val evenH = if (height % 2 == 0) height else height + 1
+            val alignedW = MediaCodecVideoEncoder.alignTo16(width)
+            val alignedH = MediaCodecVideoEncoder.alignTo16(height)
             val totalFrames = (fps * durationSeconds).coerceIn(12, 120)
 
-            val mime = MediaFormat.MIMETYPE_VIDEO_AVC
-            val format = MediaFormat.createVideoFormat(mime, evenW, evenH).apply {
-                setInteger(
-                    MediaFormat.KEY_COLOR_FORMAT,
-                    MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Flexible
-                )
-                setInteger(MediaFormat.KEY_BIT_RATE, 2_500_000)
-                setInteger(MediaFormat.KEY_FRAME_RATE, fps)
-                setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 1)
-            }
-
-            val encoder = MediaCodec.createEncoderByType(mime)
-            encoder.configure(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)
-            encoder.start()
-
-            val muxer = MediaMuxer(outFile.absolutePath, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4)
-            var trackIndex = -1
-            var muxerStarted = false
-            val bufferInfo = MediaCodec.BufferInfo()
-
-            val random = Random(42)
-            for (frameIdx in 0..totalFrames) {
-                if (frameIdx < totalFrames) {
-                    val inBufIdx = encoder.dequeueInputBuffer(15_000)
-                    if (inBufIdx >= 0) {
-                        val inBuf = encoder.getInputBuffer(inBufIdx)
-                        if (inBuf != null) {
-                            inBuf.clear()
-                            val bmp = renderTestSceneFrame(evenW, evenH, frameIdx, totalFrames, random)
-                            val yuv = bitmapToNv12(bmp, evenW, evenH)
-                            bmp.recycle()
-                            val bytesToWrite = minOf(inBuf.remaining(), yuv.size)
-                            inBuf.put(yuv, 0, bytesToWrite)
-                            val ptsUs = (frameIdx * 1_000_000L) / fps
-                            encoder.queueInputBuffer(inBufIdx, 0, bytesToWrite, ptsUs, 0)
-                        }
-                    }
-                } else {
-                    val inBufIdx = encoder.dequeueInputBuffer(15_000)
-                    if (inBufIdx >= 0) {
-                        encoder.queueInputBuffer(
-                            inBufIdx,
-                            0,
-                            0,
-                            (frameIdx * 1_000_000L) / fps,
-                            MediaCodec.BUFFER_FLAG_END_OF_STREAM
+            MediaCodecVideoEncoder.encodeToMp4(
+                MediaCodecVideoEncoder.EncodeRequest(
+                    context = context,
+                    outputFile = outFile,
+                    requestedMime = MediaFormat.MIMETYPE_VIDEO_AVC,
+                    requestedWidth = alignedW,
+                    requestedHeight = alignedH,
+                    fps = fps,
+                    bitrateBps = 2_500_000,
+                    totalFrames = totalFrames,
+                    includeAudio = false,
+                    frameProvider = { frameIdx, targetW, targetH ->
+                        renderTestSceneFrame(
+                            width = targetW,
+                            height = targetH,
+                            frameIndex = frameIdx,
+                            totalFrames = totalFrames,
+                            random = Random(42L + frameIdx)
                         )
                     }
-                }
-
-                while (true) {
-                    val outIdx = encoder.dequeueOutputBuffer(bufferInfo, 10_000)
-                    if (outIdx == MediaCodec.INFO_TRY_AGAIN_LATER) {
-                        break
-                    } else if (outIdx == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
-                        if (!muxerStarted) {
-                            trackIndex = muxer.addTrack(encoder.outputFormat)
-                            muxer.start()
-                            muxerStarted = true
-                        }
-                    } else if (outIdx >= 0) {
-                        val encodedData = encoder.getOutputBuffer(outIdx)
-                        if ((bufferInfo.flags and MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0) {
-                            bufferInfo.size = 0
-                        }
-                        if (bufferInfo.size > 0 && muxerStarted && encodedData != null) {
-                            encodedData.position(bufferInfo.offset)
-                            encodedData.limit(bufferInfo.offset + bufferInfo.size)
-                            muxer.writeSampleData(trackIndex, encodedData, bufferInfo)
-                        }
-                        encoder.releaseOutputBuffer(outIdx, false)
-                        if ((bufferInfo.flags and MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
-                            break
-                        }
-                    }
-                }
-            }
-
-            runCatching { encoder.stop() }
-            runCatching { encoder.release() }
-            if (muxerStarted) {
-                runCatching { muxer.stop() }
-            }
-            runCatching { muxer.release() }
+                )
+            )
 
             Uri.fromFile(outFile)
         }

@@ -243,7 +243,7 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun generateAndImportSampleVideo(
-        width: Int = 854,
+        width: Int = 848,
         height: Int = 480,
         fps: Int = 24,
         label: String = "VideoX_Studio_Sample_480p.mp4"
