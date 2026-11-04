@@ -16,18 +16,25 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FolderSpecial
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.Build
 import androidx.compose.material.icons.outlined.FolderSpecial
 import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -50,6 +57,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.core.ai.LocalAiModelTask
@@ -57,6 +65,7 @@ import com.example.core.common.AppLanguage
 import com.example.core.common.AppStrings
 import com.example.feature.StudioScreen
 import com.example.feature.StudioViewModel
+import com.example.feature.editor.EditXStudioScreen
 import com.example.feature.export.ExportSettingsScreen
 import com.example.feature.export.ExportSuccessScreen
 import com.example.feature.export.ProcessingScreen
@@ -66,12 +75,14 @@ import com.example.feature.home.ToolsHubScreen
 import com.example.feature.importer.VideoAnalysisScreen
 import com.example.feature.importer.VideoEditorScreen
 import com.example.feature.importer.VideoPreviewScreen
+import com.example.feature.profile.ProfileAndProScreen
 import com.example.feature.projects.AiModelManagerScreen
 import com.example.feature.projects.DeviceCompatibilityScreen
 import com.example.feature.projects.PrivacyInfoScreen
 import com.example.feature.projects.ProjectHistoryScreen
 import com.example.feature.projects.QueueManagerScreen
 import com.example.feature.projects.SettingsScreen
+import com.example.feature.templates.TemplatesScreen
 import com.example.feature.upscaler.AiUpscalerScreen
 import com.example.feature.upscaler.AutoColorScreen
 import com.example.feature.upscaler.DenoiserScreen
@@ -166,8 +177,9 @@ fun VideoXStudioApp(viewModel: StudioViewModel) {
 
     val isRootTab = currentScreen in setOf(
         StudioScreen.HOME,
+        StudioScreen.TEMPLATES,
         StudioScreen.PROJECTS,
-        StudioScreen.TOOLS_HUB,
+        StudioScreen.PROFILE,
         StudioScreen.SETTINGS
     )
 
@@ -218,6 +230,7 @@ fun VideoXStudioApp(viewModel: StudioViewModel) {
                 containerColor = MaterialTheme.colorScheme.surface,
                 modifier = Modifier.testTag("bottom_navigation_bar")
             ) {
+                // Tab 1: Home
                 NavigationBarItem(
                     selected = currentScreen == StudioScreen.HOME,
                     onClick = { viewModel.navigateTo(StudioScreen.HOME) },
@@ -227,9 +240,52 @@ fun VideoXStudioApp(viewModel: StudioViewModel) {
                             contentDescription = strings.navHome
                         )
                     },
-                    label = { Text(strings.navHome) },
+                    label = { Text(strings.navHome, fontSize = 11.sp) },
                     modifier = Modifier.testTag("nav_tab_home")
                 )
+
+                // Tab 2: Templates
+                NavigationBarItem(
+                    selected = currentScreen == StudioScreen.TEMPLATES,
+                    onClick = { viewModel.navigateTo(StudioScreen.TEMPLATES) },
+                    icon = {
+                        Icon(
+                            if (currentScreen == StudioScreen.TEMPLATES) Icons.Filled.AutoAwesome else Icons.Outlined.AutoAwesome,
+                            contentDescription = strings.navTemplates
+                        )
+                    },
+                    label = { Text(strings.navTemplates, fontSize = 11.sp) },
+                    modifier = Modifier.testTag("nav_tab_templates")
+                )
+
+                // Tab 3: Create (Large central prominent action button)
+                NavigationBarItem(
+                    selected = currentScreen == StudioScreen.EDITOR,
+                    onClick = {
+                        if (currentVideo != null) {
+                            viewModel.navigateTo(StudioScreen.EDITOR)
+                        } else {
+                            photoPickerLauncher.launch(
+                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.VideoOnly)
+                            )
+                        }
+                    },
+                    icon = {
+                        Surface(
+                            shape = CircleShape,
+                            color = ElectricPurple,
+                            modifier = Modifier.size(36.dp)
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(Icons.Filled.Add, contentDescription = strings.navCreate, tint = androidx.compose.ui.graphics.Color.White)
+                            }
+                        }
+                    },
+                    label = { Text(strings.navCreate, fontSize = 11.sp, fontWeight = FontWeight.Bold, color = ElectricPurple) },
+                    modifier = Modifier.testTag("nav_tab_create")
+                )
+
+                // Tab 4: Projects
                 NavigationBarItem(
                     selected = currentScreen == StudioScreen.PROJECTS,
                     onClick = { viewModel.navigateTo(StudioScreen.PROJECTS) },
@@ -239,32 +295,22 @@ fun VideoXStudioApp(viewModel: StudioViewModel) {
                             contentDescription = strings.navProjects
                         )
                     },
-                    label = { Text(strings.navProjects) },
+                    label = { Text(strings.navProjects, fontSize = 11.sp) },
                     modifier = Modifier.testTag("nav_tab_projects")
                 )
+
+                // Tab 5: Profile & Pro
                 NavigationBarItem(
-                    selected = currentScreen == StudioScreen.TOOLS_HUB,
-                    onClick = { viewModel.navigateTo(StudioScreen.TOOLS_HUB) },
+                    selected = currentScreen == StudioScreen.PROFILE,
+                    onClick = { viewModel.navigateTo(StudioScreen.PROFILE) },
                     icon = {
                         Icon(
-                            if (currentScreen == StudioScreen.TOOLS_HUB) Icons.Filled.Build else Icons.Outlined.Build,
-                            contentDescription = strings.navTools
+                            if (currentScreen == StudioScreen.PROFILE) Icons.Filled.Person else Icons.Outlined.Person,
+                            contentDescription = strings.navProfile
                         )
                     },
-                    label = { Text(strings.navTools) },
-                    modifier = Modifier.testTag("nav_tab_tools")
-                )
-                NavigationBarItem(
-                    selected = currentScreen == StudioScreen.SETTINGS,
-                    onClick = { viewModel.navigateTo(StudioScreen.SETTINGS) },
-                    icon = {
-                        Icon(
-                            if (currentScreen == StudioScreen.SETTINGS) Icons.Filled.Settings else Icons.Outlined.Settings,
-                            contentDescription = strings.navSettings
-                        )
-                    },
-                    label = { Text(strings.navSettings) },
-                    modifier = Modifier.testTag("nav_tab_settings")
+                    label = { Text(strings.navProfile, fontSize = 11.sp) },
+                    modifier = Modifier.testTag("nav_tab_profile")
                 )
             }
         }
@@ -352,21 +398,35 @@ fun VideoXStudioApp(viewModel: StudioViewModel) {
                         onQueueBackgroundTask = { viewModel.queueCurrentVideoForEnhancement() }
                     )
 
-                    StudioScreen.EDITOR -> VideoEditorScreen(
+                    StudioScreen.EDITOR -> EditXStudioScreen(
                         strings = strings,
                         metadata = currentVideo,
                         pipeline = pipeline,
-                        originalFrame = originalFrame,
-                        enhancedFrame = enhancedFrame,
-                        previewTimestampMs = previewTimestampMs,
                         canUndo = canUndo,
                         canRedo = canRedo,
-                        onSeekTimestamp = { viewModel.seekPreviewTimestamp(it) },
-                        onUpdatePreviewQuality = { viewModel.updatePreviewQuality(it) },
                         onUndo = { viewModel.undo() },
                         onRedo = { viewModel.redo() },
-                        onResetAll = { viewModel.resetAllEnhancements() },
-                        onNavigateTool = { viewModel.navigateTo(it) }
+                        onExportVideo = { viewModel.navigateTo(StudioScreen.EXPORT_SETTINGS) },
+                        onUpdateColorConfig = { viewModel.updateColorConfig(it) },
+                        onOneTapAutoColor = { viewModel.applyOneTapAutoColor() },
+                        onOpenAiUpscaler = { viewModel.navigateTo(StudioScreen.AI_UPSCALER) },
+                        onNavigateBack = { viewModel.navigateBack() }
+                    )
+
+                    StudioScreen.TEMPLATES -> TemplatesScreen(
+                        strings = strings,
+                        onUseTemplate = { template ->
+                            photoPickerLauncher.launch(
+                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.VideoOnly)
+                            )
+                        }
+                    )
+
+                    StudioScreen.PROFILE -> ProfileAndProScreen(
+                        strings = strings,
+                        projectCount = projects.size,
+                        onNavigateToSettings = { viewModel.navigateTo(StudioScreen.SETTINGS) },
+                        onNavigateToPrivacy = { viewModel.navigateTo(StudioScreen.PRIVACY_INFO) }
                     )
 
                     StudioScreen.AI_UPSCALER -> AiUpscalerScreen(

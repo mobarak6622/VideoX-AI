@@ -69,6 +69,8 @@ enum class StudioScreen {
     PROCESSING,
     EXPORT_SUCCESS,
     PROJECTS,
+    TEMPLATES,
+    PROFILE,
     TOOLS_HUB,
     AI_MODEL_MANAGER,
     DEVICE_COMPATIBILITY,

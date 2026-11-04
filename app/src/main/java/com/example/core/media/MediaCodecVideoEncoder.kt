@@ -367,8 +367,12 @@ object MediaCodecVideoEncoder {
                             encodedData.position(bufferInfo.offset)
                             encodedData.limit(bufferInfo.offset + bufferInfo.size)
 
-                            // Guarantee strictly increasing deterministic presentation timestamps
-                            val deterministicPtsUs = (writtenVideoSamples * 1_000_000L) / fps
+                            // Guarantee strictly increasing deterministic presentation timestamps across exact duration
+                            val deterministicPtsUs = if (request.maxAudioDurationUs in 100_000L..3_600_000_000L && totalFrames > 1) {
+                                (writtenVideoSamples * request.maxAudioDurationUs) / totalFrames.toLong()
+                            } else {
+                                (writtenVideoSamples * 1_000_000L) / fps
+                            }
                             bufferInfo.presentationTimeUs = if (deterministicPtsUs <= lastMuxedPtsUs) {
                                 lastMuxedPtsUs + (1_000_000L / fps).coerceAtLeast(1_000L)
                             } else {

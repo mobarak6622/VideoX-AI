@@ -60,6 +60,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.R
 import com.example.core.common.BilingualStrings
 import com.example.core.common.VideoMetadata
@@ -215,89 +216,57 @@ fun HomeDashboardScreen(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Hero Studio Header Card
+        // 1. EditX AI Premium Header
         item {
             Card(
                 shape = RoundedCornerShape(24.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth().border(1.dp, Color(0xFF262B3D), RoundedCornerShape(24.dp))
             ) {
-                Box {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_studio_hero),
-                        contentDescription = "Studio Visual Header",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(175.dp),
-                        contentScale = ContentScale.Crop
-                    )
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(175.dp)
-                            .background(
-                                Brush.verticalGradient(
-                                    listOf(
-                                        Color.Transparent,
-                                        MaterialTheme.colorScheme.surface.copy(alpha = 0.92f)
-                                    )
-                                )
-                            )
-                    )
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(18.dp)
+                Column(modifier = Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Surface(
-                            shape = RoundedCornerShape(50),
-                            color = EmeraldSuccess.copy(alpha = 0.18f),
-                            modifier = Modifier.border(1.dp, EmeraldSuccess.copy(alpha = 0.5f), RoundedCornerShape(50))
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 5.dp),
-                                verticalAlignment = Alignment.CenterVertically
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Surface(
+                                shape = RoundedCornerShape(10.dp),
+                                color = ElectricPurple,
+                                modifier = Modifier.size(40.dp)
                             ) {
-                                Icon(
-                                    Icons.Default.Security,
-                                    contentDescription = null,
-                                    tint = EmeraldSuccess,
-                                    modifier = Modifier.size(14.dp)
-                                )
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text(
-                                    text = strings.offlineBadge,
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = EmeraldSuccess
-                                )
+                                Box(contentAlignment = Alignment.Center) {
+                                    Text("EX", fontSize = 16.sp, fontWeight = FontWeight.Black, color = Color.White)
+                                }
+                            }
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Column {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text("EditX AI", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Surface(shape = RoundedCornerShape(6.dp), color = ElectricPurple.copy(alpha = 0.25f)) {
+                                        Text("PRO VIP", fontSize = 9.sp, fontWeight = FontWeight.Bold, color = ElectricPurple, modifier = Modifier.padding(horizontal = 5.dp, vertical = 2.dp))
+                                    }
+                                }
+                                Text("Professional Video Editing Studio", fontSize = 11.sp, color = Color.Gray)
                             }
                         }
 
-                        Spacer(modifier = Modifier.height(64.dp))
-                        Text(
-                            text = strings.appName,
-                            style = MaterialTheme.typography.headlineLarge,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Text(
-                            text = strings.tagline,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                        // Right icons (Settings & Profile shortcuts)
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                            Surface(
+                                shape = CircleShape,
+                                color = Color.White.copy(alpha = 0.08f),
+                                modifier = Modifier.size(36.dp).clickable { onNavigate(StudioScreen.SETTINGS) }
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(Icons.Default.Tune, contentDescription = "Settings", tint = Color.LightGray, modifier = Modifier.size(18.dp))
+                                }
+                            }
+                        }
                     }
-                }
 
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 18.dp, vertical = 14.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    Text(
-                        text = strings.importVideoTitle,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
+                    // Main Primary Action Buttons
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -305,28 +274,28 @@ fun HomeDashboardScreen(
                         Button(
                             onClick = onPickFromGallery,
                             modifier = Modifier
-                                .weight(1f)
-                                .height(50.dp)
+                                .weight(1.2f)
+                                .height(52.dp)
                                 .testTag("btn_import_photo_picker"),
                             shape = RoundedCornerShape(14.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = ElectricPurple)
                         ) {
                             Icon(Icons.Default.PhotoLibrary, contentDescription = null, modifier = Modifier.size(18.dp))
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text(strings.importFromPhotoPicker, style = MaterialTheme.typography.labelLarge)
+                            Text("New Project", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
                         }
 
                         OutlinedButton(
                             onClick = onPickFromStorageSaf,
                             modifier = Modifier
                                 .weight(1f)
-                                .height(50.dp)
+                                .height(52.dp)
                                 .testTag("btn_import_saf"),
                             shape = RoundedCornerShape(14.dp)
                         ) {
                             Icon(Icons.Default.FolderOpen, contentDescription = null, modifier = Modifier.size(18.dp))
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text(strings.importFromStorage, style = MaterialTheme.typography.labelLarge)
+                            Text("Device SAF", style = MaterialTheme.typography.labelLarge)
                         }
                     }
 
@@ -335,31 +304,19 @@ fun HomeDashboardScreen(
                         enabled = !isGeneratingSample,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(48.dp)
+                            .height(46.dp)
                             .testTag("btn_generate_sample_video"),
                         shape = RoundedCornerShape(14.dp)
                     ) {
                         if (isGeneratingSample) {
-                            CircularProgressIndicator(modifier = Modifier.size(18.dp), strokeWidth = 2.dp)
+                            CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp)
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text("Synthesizing MP4 Test Stream via MediaCodec...")
+                            Text("Synthesizing 1080p MP4 Test Stream...", fontSize = 12.sp)
                         } else {
-                            Icon(Icons.Default.MovieCreation, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Icon(Icons.Default.MovieCreation, contentDescription = null, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text(strings.generateTestVideo)
+                            Text("Generate 1080p Test Video Clip", fontSize = 12.sp)
                         }
-                    }
-
-                    Button(
-                        onClick = onDownloadApk,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(48.dp)
-                            .testTag("btn_home_download_apk"),
-                        shape = RoundedCornerShape(14.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = CyberBlue)
-                    ) {
-                        Text("⬇️ Save APK File (VideoX_AI_v1.0.0.apk)", style = MaterialTheme.typography.labelLarge)
                     }
                 }
             }
@@ -377,7 +334,32 @@ fun HomeDashboardScreen(
             }
         }
 
-        // Hardware & Thermal Readiness Strip
+        // 2. Ten Quick Action Cards
+        item {
+            Text(
+                text = "Quick Action Studio Tools",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            )
+        }
+
+        item {
+            TenQuickActionCardsGrid(
+                onNewProject = onPickFromGallery,
+                onAiEnhancer = { onNavigate(StudioScreen.AI_UPSCALER) },
+                onAutoEdit = { onNavigate(StudioScreen.AUTO_COLOR) },
+                onReelsMaker = { onNavigate(StudioScreen.EDITOR) },
+                onPhotoToVideo = onPickFromGallery,
+                onCompressor = { onNavigate(StudioScreen.EXPORT_SETTINGS) },
+                onBgRemover = { onNavigate(StudioScreen.DSLR_BOKEH) },
+                onAutoCaptions = { onNavigate(StudioScreen.EDITOR) },
+                onAiVoice = { onNavigate(StudioScreen.EDITOR) },
+                onConverter = { onNavigate(StudioScreen.EXPORT_SETTINGS) }
+            )
+        }
+
+        // 3. Hardware & Thermal Readiness Strip
         if (deviceCapabilities != null) {
             item {
                 Card(
@@ -400,12 +382,12 @@ fun HomeDashboardScreen(
                             Spacer(modifier = Modifier.width(12.dp))
                             Column {
                                 Text(
-                                    text = "${deviceCapabilities.deviceModel} • ${deviceCapabilities.availableRamMb}MB Free RAM",
+                                    text = "${deviceCapabilities.deviceModel} • GPU/NPU Accelerated",
                                     style = MaterialTheme.typography.titleSmall,
                                     fontWeight = FontWeight.SemiBold
                                 )
                                 Text(
-                                    text = "Profile: ${deviceCapabilities.recommendedProfile.label} • Thermal: ${deviceCapabilities.thermalStatusLabel}",
+                                    text = "Profile: ${deviceCapabilities.recommendedProfile.label} • 4K Codec Ready",
                                     style = MaterialTheme.typography.labelMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -417,27 +399,14 @@ fun HomeDashboardScreen(
             }
         }
 
-        // Quick Studio Modules Grid
-        item {
-            Text(
-                text = strings.quickToolsTitle,
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(top = 4.dp)
-            )
-        }
-
-        item {
-            StudioModuleGrid(strings = strings, onNavigate = onNavigate)
-        }
-
-        // Recent Projects Section
+        // 4. Recent Projects Section
         item {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(strings.recentProjectsTitle, style = MaterialTheme.typography.titleLarge)
+                Text(strings.recentProjectsTitle, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
                 if (recentProjects.isNotEmpty()) {
                     Text(
                         text = "View All (${recentProjects.size})",
@@ -477,7 +446,7 @@ fun HomeDashboardScreen(
                 }
             }
         } else {
-            items(recentProjects.take(3), key = { it.id }) { project ->
+            items(recentProjects.take(4), key = { it.id }) { project ->
                 Card(
                     shape = RoundedCornerShape(16.dp),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
@@ -517,6 +486,80 @@ fun HomeDashboardScreen(
         }
     }
 }
+
+@Composable
+private fun TenQuickActionCardsGrid(
+    onNewProject: () -> Unit,
+    onAiEnhancer: () -> Unit,
+    onAutoEdit: () -> Unit,
+    onReelsMaker: () -> Unit,
+    onPhotoToVideo: () -> Unit,
+    onCompressor: () -> Unit,
+    onBgRemover: () -> Unit,
+    onAutoCaptions: () -> Unit,
+    onAiVoice: () -> Unit,
+    onConverter: () -> Unit
+) {
+    val actions = listOf(
+        QuickActionItem("New Project", "Multi-Track", Icons.Default.MovieCreation, ElectricPurple, onNewProject),
+        QuickActionItem("AI Enhancer", "4K Super-Res", Icons.Default.HighQuality, ElectricPurple, onAiEnhancer),
+        QuickActionItem("AI Auto Edit", "Smart Cut", Icons.Default.AutoAwesome, CyberBlue, onAutoEdit),
+        QuickActionItem("Reels Maker", "9:16 Vertical", Icons.Default.CameraAlt, EmeraldSuccess, onReelsMaker),
+        QuickActionItem("Photo to Video", "Ken Burns", Icons.Default.PhotoLibrary, ElectricPurple, onPhotoToVideo),
+        QuickActionItem("Compressor", "Smart Shrink", Icons.Default.Tune, CyberBlue, onCompressor),
+        QuickActionItem("Bg Remover", "AI Bokeh", Icons.Default.BlurOn, EmeraldSuccess, onBgRemover),
+        QuickActionItem("Auto Captions", "Speech to Text", Icons.Default.Layers, ElectricPurple, onAutoCaptions),
+        QuickActionItem("AI Voice", "Voiceover FX", Icons.Default.SlowMotionVideo, CyberBlue, onAiVoice),
+        QuickActionItem("Converter", "Universal MP4", Icons.Default.CenterFocusStrong, EmeraldSuccess, onConverter)
+    )
+
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        for (row in actions.chunked(2)) {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                for (action in row) {
+                    Card(
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable { action.onClick() }
+                            .border(0.5.dp, Color(0xFF262A3B), RoundedCornerShape(16.dp))
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(38.dp)
+                                    .clip(CircleShape)
+                                    .background(action.accent.copy(alpha = 0.16f)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(action.icon, contentDescription = action.title, tint = action.accent, modifier = Modifier.size(20.dp))
+                            }
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Column {
+                                Text(action.title, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                                Text(action.subtitle, fontSize = 10.sp, color = Color.Gray)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+private data class QuickActionItem(
+    val title: String,
+    val subtitle: String,
+    val icon: ImageVector,
+    val accent: Color,
+    val onClick: () -> Unit
+)
 
 @Composable
 private fun ActiveVideoBannerCard(

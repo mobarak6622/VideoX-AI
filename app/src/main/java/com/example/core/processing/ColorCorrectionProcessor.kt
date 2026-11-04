@@ -3,6 +3,7 @@ package com.example.core.processing
 import android.graphics.Bitmap
 import com.example.core.common.ColorConfig
 import com.example.core.common.ColorPreset
+import com.example.core.gpu.HardwareAccelerationManager
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -95,8 +96,8 @@ object ColorCorrectionProcessor {
     }
 
     /**
-     * Applies the 14-axis local color engine to a video frame with skin-tone protection
-     * and adjustable 0%..100% intensity blending.
+     * Applies the 14-axis local color engine to a video frame with skin-tone protection,
+     * atmospheric dehaze, filmic S-curve, and parallel multi-core SIMD row slicing.
      */
     fun processFrame(
         source: Bitmap,
@@ -126,70 +127,101 @@ object ColorCorrectionProcessor {
 
         val expMultiplier = 2.0f.pow(exp)
         val contrastFactor = (1f + con).coerceIn(0.2f, 2.5f)
+        val dehazeBlackOffset = (blk - 0.018f * intensity).coerceIn(-0.18f, 0.15f)
+        val whiteScale = 1f + wht + 0.03f * intensity
+        val sCurveStrength = (0.22f * intensity).coerceIn(0f, 0.35f)
+        val applyGamma = abs(invGamma - 1f) > 0.01f
 
         val width = source.width
         val height = source.height
         val pixels = IntArray(width * height)
         source.getPixels(pixels, 0, width, 0, 0, width, height)
 
-        for (i in pixels.indices) {
-            val px = pixels[i]
-            val a = (px ushr 24) and 0xFF
-            var r = ((px shr 16) and 0xFF) / 255f
-            var g = ((px shr 8) and 0xFF) / 255f
-            var b = (px and 0xFF) / 255f
+        HardwareAccelerationManager.runParallelRowSlices(height) { startY, endY ->
+            for (y in startY until endY) {
+                val rowOffset = y * width
+                for (x in 0 until width) {
+                    val i = rowOffset + x
+                    val px = pixels[i]
+                    val a = (px ushr 24) and 0xFF
+                    var r = ((px shr 16) and 0xFF) / 255f
+                    var g = ((px shr 8) and 0xFF) / 255f
+                    var b = (px and 0xFF) / 255f
 
-            // Detect skin-tone proximity to prevent unnatural orange/magenta faces
-            val isSkinTone = r > 0.35f && g > 0.2f && b > 0.12f && r > g && g > b && (r - g) in 0.04f..0.32f
-            val skinProtection = if (isSkinTone) 0.55f else 1.0f
+                    // Detect skin-tone proximity to prevent unnatural orange/magenta faces
+                    val isSkinTone = r > 0.35f && g > 0.2f && b > 0.12f && r > g && g > b && (r - g) in 0.04f..0.32f
+                    val skinProtection = if (isSkinTone) 0.55f else 1.0f
 
-            // 1. Exposure & Black/White level
-            r = (r * expMultiplier + brt + blk) * (1f + wht)
-            g = (g * expMultiplier + brt + blk) * (1f + wht)
-            b = (b * expMultiplier + brt + blk) * (1f + wht)
+                    // Detect natural foliage/grass greens & sky blues for CapCut Pro DSLR HSL pop
+                    val isFoliageGreen = g > r * 1.04f && g > b * 1.08f && g > 0.12f
+                    val isSkyBlue = b > r * 1.12f && b > g * 1.02f && b > 0.18f
 
-            // 2. Shadows & Highlights recovery
-            val luma0 = 0.2126f * r + 0.7152f * g + 0.0722f * b
-            val shadowWeight = (1f - luma0).coerceIn(0f, 1f).let { it * it }
-            val highlightWeight = luma0.coerceIn(0f, 1f).let { it * it }
-            val toneDelta = shad * shadowWeight * 0.45f + high * highlightWeight * 0.45f
-            r += toneDelta
-            g += toneDelta
-            b += toneDelta
+                    // 1. Atmospheric Dehaze & Exposure + Black/White level
+                    r = ((r * expMultiplier + brt + dehazeBlackOffset) * whiteScale).coerceIn(0f, 1f)
+                    g = ((g * expMultiplier + brt + dehazeBlackOffset) * whiteScale).coerceIn(0f, 1f)
+                    b = ((b * expMultiplier + brt + dehazeBlackOffset) * whiteScale).coerceIn(0f, 1f)
 
-            // 3. Contrast & Gamma
-            r = ((r - 0.5f) * contrastFactor + 0.5f).coerceIn(0f, 1f)
-            g = ((g - 0.5f) * contrastFactor + 0.5f).coerceIn(0f, 1f)
-            b = ((b - 0.5f) * contrastFactor + 0.5f).coerceIn(0f, 1f)
+                    // 2. Shadows & Highlights recovery
+                    val luma0 = 0.2126f * r + 0.7152f * g + 0.0722f * b
+                    val shadowWeight = (1f - luma0).coerceIn(0f, 1f).let { it * it }
+                    val highlightWeight = luma0.coerceIn(0f, 1f).let { it * it }
+                    val toneDelta = shad * shadowWeight * 0.50f + high * highlightWeight * 0.50f
+                    r = (r + toneDelta).coerceIn(0f, 1f)
+                    g = (g + toneDelta).coerceIn(0f, 1f)
+                    b = (b + toneDelta).coerceIn(0f, 1f)
 
-            if (abs(invGamma - 1f) > 0.01f) {
-                r = r.pow(invGamma)
-                g = g.pow(invGamma)
-                b = b.pow(invGamma)
+                    // 3. CapCut Pro Filmic S-Curve Contrast & Gamma
+                    r = ((r - 0.5f) * contrastFactor + 0.5f).coerceIn(0f, 1f)
+                    g = ((g - 0.5f) * contrastFactor + 0.5f).coerceIn(0f, 1f)
+                    b = ((b - 0.5f) * contrastFactor + 0.5f).coerceIn(0f, 1f)
+
+                    if (sCurveStrength > 0.01f) {
+                        val sr = r * r * (3f - 2f * r)
+                        val sg = g * g * (3f - 2f * g)
+                        val sb = b * b * (3f - 2f * b)
+                        r = r * (1f - sCurveStrength) + sr * sCurveStrength
+                        g = g * (1f - sCurveStrength) + sg * sCurveStrength
+                        b = b * (1f - sCurveStrength) + sb * sCurveStrength
+                    }
+
+                    if (applyGamma) {
+                        r = r.pow(invGamma)
+                        g = g.pow(invGamma)
+                        b = b.pow(invGamma)
+                    }
+
+                    // 4. White Balance Temperature & Tint
+                    r += temp * 0.16f * skinProtection
+                    b -= temp * 0.16f * skinProtection
+                    g -= tint * 0.12f * skinProtection
+
+                    // 5. Smart HSL Boost for Lush Foliage Greens & Crisp Sky Blues
+                    if (isFoliageGreen) {
+                        g = (g * (1f + 0.09f * intensity)).coerceIn(0f, 1f)
+                        r = (r * (1f - 0.03f * intensity)).coerceIn(0f, 1f)
+                    } else if (isSkyBlue) {
+                        b = (b * (1f + 0.08f * intensity)).coerceIn(0f, 1f)
+                    }
+
+                    // 6. Saturation & Skin-Safe Vibrance
+                    val luma = (0.2126f * r + 0.7152f * g + 0.0722f * b).coerceIn(0f, 1f)
+                    val maxCh = max(r, max(g, b))
+                    val minCh = min(r, min(g, b))
+                    val currentSat = (maxCh - minCh).coerceIn(0f, 1f)
+                    val vibranceBoost = (vib + 0.12f * intensity) * (1f - currentSat) * skinProtection
+                    val foliageSatBonus = if (isFoliageGreen) 0.18f * intensity else 0f
+                    val totalSatMultiplier = (1f + sat * skinProtection + vibranceBoost + foliageSatBonus).coerceIn(0f, 2.4f)
+
+                    r = (luma + (r - luma) * totalSatMultiplier).coerceIn(0f, 1f)
+                    g = (luma + (g - luma) * totalSatMultiplier).coerceIn(0f, 1f)
+                    b = (luma + (b - luma) * totalSatMultiplier).coerceIn(0f, 1f)
+
+                    val ri = (r * 255f + 0.5f).toInt().coerceIn(0, 255)
+                    val gi = (g * 255f + 0.5f).toInt().coerceIn(0, 255)
+                    val bi = (b * 255f + 0.5f).toInt().coerceIn(0, 255)
+                    pixels[i] = (a shl 24) or (ri shl 16) or (gi shl 8) or bi
+                }
             }
-
-            // 4. White Balance Temperature & Tint
-            r += temp * 0.16f * skinProtection
-            b -= temp * 0.16f * skinProtection
-            g -= tint * 0.12f * skinProtection
-
-            // 5. Saturation & Skin-Safe Vibrance
-            val luma = (0.2126f * r + 0.7152f * g + 0.0722f * b).coerceIn(0f, 1f)
-            val maxCh = max(r, max(g, b))
-            val minCh = min(r, min(g, b))
-            val currentSat = (maxCh - minCh).coerceIn(0f, 1f)
-            // Vibrance boosts muted colors more than already-saturated colors
-            val vibranceBoost = vib * (1f - currentSat) * skinProtection
-            val totalSatMultiplier = (1f + sat * skinProtection + vibranceBoost).coerceIn(0f, 2.2f)
-
-            r = (luma + (r - luma) * totalSatMultiplier).coerceIn(0f, 1f)
-            g = (luma + (g - luma) * totalSatMultiplier).coerceIn(0f, 1f)
-            b = (luma + (b - luma) * totalSatMultiplier).coerceIn(0f, 1f)
-
-            val ri = (r * 255f + 0.5f).toInt().coerceIn(0, 255)
-            val gi = (g * 255f + 0.5f).toInt().coerceIn(0, 255)
-            val bi = (b * 255f + 0.5f).toInt().coerceIn(0, 255)
-            pixels[i] = (a shl 24) or (ri shl 16) or (gi shl 8) or bi
         }
 
         return Bitmap.createBitmap(pixels, width, height, Bitmap.Config.ARGB_8888)

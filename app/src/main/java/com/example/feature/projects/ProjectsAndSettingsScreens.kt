@@ -235,6 +235,11 @@ fun AiModelManagerScreen(
                     Text(info.task.description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     Text(info.task.architectureLabel, style = MaterialTheme.typography.labelMedium, color = ElectricPurple)
                     Text(
+                        "Hardware Accelerator: ${info.activeExecutionProvider}",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = CyberBlue
+                    )
+                    Text(
                         "Status: ${info.statusMessage} • SHA-256: ${info.sha256Short} • ${formatFileSize(info.fileSizeBytes)}",
                         style = MaterialTheme.typography.labelSmall,
                         color = EmeraldSuccess
@@ -304,6 +309,40 @@ fun DeviceCompatibilityScreen(
         }
 
         if (report != null) {
+            item {
+                Card(
+                    shape = RoundedCornerShape(18.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                        Text(
+                            "GPU / NPU / VPU Hardware Acceleration Status",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = EmeraldSuccess
+                        )
+                        Text(
+                            "AI Neural Engine: ${report.hardwareAcceleration.activeAiDelegateName}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            color = ElectricPurple
+                        )
+                        Text(
+                            "GPU Shader Pipeline: ${report.hardwareAcceleration.activeGpuPipelineName}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = CyberBlue
+                        )
+                        Text("Hardware Video Decoder (VPU): ${report.hardwareAcceleration.primaryHardwareDecoderName}")
+                        Text("Hardware Video Encoder (VPU): ${report.hardwareAcceleration.primaryHardwareEncoderName}")
+                        Text(
+                            "Verification Summary: ${report.hardwareAcceleration.summaryBadge}",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = EmeraldSuccess
+                        )
+                    }
+                }
+            }
+
             item {
                 Card(
                     shape = RoundedCornerShape(18.dp),

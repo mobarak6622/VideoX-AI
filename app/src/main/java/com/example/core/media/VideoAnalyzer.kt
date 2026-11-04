@@ -180,9 +180,9 @@ class VideoAnalyzer(private val context: Context) {
             val clampedTimeUs = if (durationMs > 0L) timeUs.coerceIn(0L, safeMaxUs) else timeUs.coerceAtLeast(0L)
 
             val raw = runCatching {
-                retriever.getFrameAtTime(clampedTimeUs, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
+                retriever.getFrameAtTime(clampedTimeUs, MediaMetadataRetriever.OPTION_CLOSEST)
             }.getOrNull() ?: runCatching {
-                retriever.getFrameAtTime(clampedTimeUs, MediaMetadataRetriever.OPTION_PREVIOUS_SYNC)
+                retriever.getFrameAtTime(clampedTimeUs, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
             }.getOrNull() ?: runCatching {
                 retriever.getFrameAtTime(0L)
             }.getOrNull() ?: return null

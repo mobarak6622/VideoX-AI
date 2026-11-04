@@ -162,43 +162,43 @@ data class VideoMetadata(
 }
 
 data class UpscaleConfig(
-    val targetResolution: TargetResolution = TargetResolution.ORIGINAL,
-    val mode: UpscaleMode = UpscaleMode.STANDARD_RESIZE,
+    val targetResolution: TargetResolution = TargetResolution.FHD_1080P,
+    val mode: UpscaleMode = UpscaleMode.AI_SUPER_RESOLUTION,
     val tileSize: Int = 192,
     val tileOverlap: Int = 16
 )
 
 data class ColorConfig(
-    val enabled: Boolean = false,
-    val autoColor: Boolean = false,
-    val preset: ColorPreset = ColorPreset.NONE,
+    val enabled: Boolean = true,
+    val autoColor: Boolean = true,
+    val preset: ColorPreset = ColorPreset.VIVID,
     val intensityPercent: Float = 100f,
-    val exposure: Float = 0f,       // -1f..1f
-    val brightness: Float = 0f,     // -0.5f..0.5f
-    val contrast: Float = 0f,       // -0.5f..0.5f
-    val saturation: Float = 0f,     // -1f..1f
+    val exposure: Float = 0.04f,    // -1f..1f
+    val brightness: Float = 0.02f,  // -0.5f..0.5f
+    val contrast: Float = 0.16f,    // -0.5f..0.5f
+    val saturation: Float = 0.18f,  // -1f..1f
     val whiteBalance: Float = 0f,   // -1f..1f
-    val temperature: Float = 0f,    // -1f..1f
+    val temperature: Float = 0.02f, // -1f..1f
     val tint: Float = 0f,           // -1f..1f
-    val highlights: Float = 0f,     // -1f..1f
-    val shadows: Float = 0f,        // -1f..1f
+    val highlights: Float = -0.12f, // -1f..1f
+    val shadows: Float = 0.14f,     // -1f..1f
     val gamma: Float = 1.0f,        // 0.5f..2.0f
-    val blackLevel: Float = 0f,     // -0.2f..0.2f
-    val whiteLevel: Float = 0f,     // -0.2f..0.2f
-    val vibrance: Float = 0f        // -1f..1f
+    val blackLevel: Float = -0.02f, // -0.2f..0.2f (Dehaze deep blacks)
+    val whiteLevel: Float = 0.04f,  // -0.2f..0.2f
+    val vibrance: Float = 0.25f     // -1f..1f
 )
 
 data class FpsConfig(
     val targetFps: Int = 0, // 0 = Original
-    val mode: FpsConversionMode = FpsConversionMode.STANDARD_RESAMPLE,
+    val mode: FpsConversionMode = FpsConversionMode.AI_OPTICAL_FLOW_RIFE,
     val sceneCutDetection: Boolean = true,
     val preserveDuration: Boolean = true
 )
 
 data class DenoiseConfig(
-    val strength: FilterStrength = FilterStrength.OFF,
+    val strength: FilterStrength = FilterStrength.LOW,
     val spatialStrength: Float = 0.4f,
-    val temporalStrength: Float = 0.4f,
+    val temporalStrength: Float = 0.35f,
     val lowLightNoiseReduction: Boolean = true,
     val grainRemoval: Boolean = false,
     val compressionArtifactReduction: Boolean = true,
@@ -207,9 +207,9 @@ data class DenoiseConfig(
 )
 
 data class StabilizeConfig(
-    val strength: FilterStrength = FilterStrength.OFF,
+    val strength: FilterStrength = FilterStrength.LOW,
     val smoothingRadiusFrames: Int = 8,
-    val cropCompensationPercent: Float = 6f,
+    val cropCompensationPercent: Float = 5f,
     val rollingShutterCorrection: Boolean = false
 ) {
     val estimatedFramingLossPercent: Float
@@ -223,22 +223,22 @@ data class StabilizeConfig(
 }
 
 data class SharpenConfig(
-    val strength: Float = 0f, // 0f..1f
-    val edgeEnhancement: Float = 0f,
-    val clarity: Float = 0f,
-    val fineDetailRecovery: Float = 0f,
-    val textureRecovery: Float = 0f,
-    val deblurring: Boolean = false
+    val strength: Float = 0.58f, // 0f..1f
+    val edgeEnhancement: Float = 0.45f,
+    val clarity: Float = 0.52f,
+    val fineDetailRecovery: Float = 0.48f,
+    val textureRecovery: Float = 0.40f,
+    val deblurring: Boolean = true
 )
 
 data class ExportConfig(
-    val resolution: TargetResolution = TargetResolution.ORIGINAL,
-    val targetFps: Int = 0, // 0 = Original
+    val resolution: TargetResolution = TargetResolution.FHD_1080P,
+    val targetFps: Int = 0, // 0 = Original smooth FPS (or 30/60/120)
     val codec: VideoCodecOption = VideoCodecOption.H264,
     val audioMode: AudioExportMode = AudioExportMode.PRESERVE_ORIGINAL,
     val audioBitrateKbps: Int = 192,
-    val bitratePreset: BitratePreset = BitratePreset.AUTO,
-    val customBitrateMbps: Float = 16f
+    val bitratePreset: BitratePreset = BitratePreset.HIGH,
+    val customBitrateMbps: Float = 20f
 )
 
 data class DslrBokehConfig(

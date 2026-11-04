@@ -1,0 +1,1376 @@
+ULTIMATE MASTER PROMPT
+
+EDITX AI – PROFESSIONAL VIDEO EDITOR
+
+Complete CapCut-Style Advanced Android Video Editing Application
+
+You are an elite team of Android developers, senior software architects, professional video editing engineers, AI engineers, UI/UX designers, GPU rendering specialists, and quality assurance engineers.
+
+Your mission is to design and develop a world-class, professional Android Video Editing Application named EditX AI – Professional Video Editor.
+
+The application should deliver an editing experience comparable to leading professional mobile video editors, including CapCut Pro-style capabilities, while maintaining its own original branding, UI, architecture, and implementation.
+
+This is not a simple video editing demo or UI prototype.
+
+Build a real, functional, production-oriented video editing application with a powerful native video processing engine, multi-layer timeline, advanced editing tools, AI-powered enhancement, professional audio tools, and high-quality export capabilities.
+
+Most important instruction: Do not create buttons that do nothing. Every visible feature must have a working implementation, a clearly defined supported state, or an honest explanation of its requirements.
+
+---
+
+1. CORE APPLICATION CONFIGURATION
+
+Application Name: EditX AI
+
+Application Type: Professional AI-Powered Video Editor
+
+Primary Platform: Android
+
+Target Devices: Android smartphones and tablets
+
+Primary Orientation: Portrait, with landscape editing workspace support
+
+Design Style: Premium Professional Dark UI
+
+Default Theme: Dark
+
+Languages:
+
+- English
+- বাংলা (Bengali)
+
+Processing Priority: Local Device Processing
+
+Privacy: Original videos and project files must remain on the device by default.
+
+Internet: Not required for core video editing. Internet may be used for optional asset downloads, updates, or explicitly enabled online AI services.
+
+Export Target: Up to 4K UHD (2160p), subject to device, source, and encoder capabilities.
+
+Target UI Performance: 60 FPS.
+
+Architecture: Modular, scalable, native Android architecture.
+
+---
+
+2. MASTER DEVELOPMENT RULES
+
+Follow these rules throughout development.
+
+1. Build the actual application, not merely a visual prototype.
+2. Use a modular architecture with independent editing modules.
+3. Use Kotlin and Jetpack Compose for the native Android interface.
+4. Use Android Media3, MediaCodec, OpenGL ES or Vulkan where appropriate.
+5. Use GPU acceleration whenever supported.
+6. Implement real-time preview with adaptive rendering quality.
+7. Implement non-destructive editing.
+8. Preserve original imported media.
+9. Implement project auto-save and crash recovery.
+10. Make all editing actions reversible through Undo and Redo.
+11. Support multiple video, image, audio, text, and effect layers.
+12. Implement real export encoding, not fake progress animations.
+13. Never display unsupported resolutions or features as available.
+14. Never use placeholder buttons in the final application.
+15. Never claim that an AI operation has succeeded unless processing actually succeeds.
+16. Request Android permissions only when needed.
+17. Optimize memory, battery, storage, and thermal performance.
+18. Test each major module before moving to the next phase.
+19. Maintain clean, reusable, well-documented code.
+20. Do not remove working features when implementing new features.
+
+When an external AI model, paid API, native dependency, or platform-specific integration is required, create a clearly documented integration point rather than pretending the feature works.
+
+---
+
+3. PREMIUM HOME DASHBOARD
+
+Create a visually stunning Home Dashboard.
+
+Header
+
+- EditX AI Logo
+- Application Name
+- Notification Icon
+- Profile Icon
+- Settings Icon
+- Pro Membership Indicator
+
+Quick Action Cards
+
+Create large, modern action cards for:
+
+1. New Project
+2. AI Video Enhancer
+3. AI Auto Edit
+4. AI Reels Maker
+5. Photo to Video
+6. Video Compressor
+7. Background Remover
+8. Auto Captions
+9. AI Voice Studio
+10. Video Converter
+
+Recent Projects
+
+Display:
+
+- Project Thumbnail
+- Project Name
+- Project Duration
+- Aspect Ratio
+- Resolution
+- Last Modified Date
+- Continue Editing
+- Rename
+- Duplicate
+- Delete
+- Favorite
+
+Templates Section
+
+Categories:
+
+- Trending
+- Cinematic
+- Wedding
+- Birthday
+- Business Advertisement
+- Product Promotion
+- YouTube Intro
+- Facebook Reels
+- Instagram Reels
+- TikTok
+- Travel
+- Fashion
+- Educational
+- Sports
+
+Bottom Navigation
+
+Create exactly five main navigation tabs:
+
+1. Home
+2. Templates
+3. Create (large central button)
+4. Projects
+5. Profile
+
+Keep the navigation intuitive, modern, and responsive.
+
+---
+
+4. PROFESSIONAL VIDEO EDITING STUDIO
+
+This is the most important part of the application.
+
+When the user selects New Project, open a complete professional editing workspace.
+
+A. Top Toolbar
+
+Include:
+
+- Back
+- Project Name
+- Undo
+- Redo
+- Save Status
+- Project Settings
+- Fullscreen Preview
+- Export
+
+Auto-save projects without requiring manual saving.
+
+B. Video Preview Window
+
+Implement a real-time video preview.
+
+Features:
+
+- Play
+- Pause
+- Frame-by-frame navigation
+- Fullscreen Preview
+- Preview Quality Selection
+- Aspect Ratio Selection
+- Safe Area Guides
+- Before / After Comparison
+- Timecode Display
+- Audio Monitoring
+- Preview Scaling
+
+Supported Canvas Ratios:
+
+- 9:16
+- 16:9
+- 1:1
+- 4:5
+- 3:4
+- Custom Aspect Ratio
+
+C. PROFESSIONAL MULTI-TRACK TIMELINE
+
+Build a powerful multi-layer timeline.
+
+Required tracks:
+
+1. Main Video Track
+2. Secondary Video Track
+3. Overlay Video Track
+4. Image Track
+5. Text Track
+6. Subtitle Track
+7. Sticker Track
+8. Background Music Track
+9. Voiceover Track
+10. Sound Effects Track
+11. Visual Effects Track
+12. Adjustment Layer Track
+
+Timeline functionality:
+
+- Drag and Drop
+- Split Clip
+- Trim Start
+- Trim End
+- Move Clip
+- Delete Clip
+- Duplicate Clip
+- Replace Media
+- Multi-select
+- Group Clips
+- Track Lock
+- Track Visibility
+- Track Mute
+- Track Reordering
+- Magnetic Snapping
+- Timeline Zoom
+- Timeline Markers
+- Frame-by-frame Navigation
+- Waveform Display
+- Clip Duration Display
+- Copy and Paste
+- Undo and Redo
+- Ripple Delete
+- Ripple Editing
+- Project Recovery
+
+Implement a precise playhead and frame-accurate editing.
+
+The timeline must support multiple simultaneous layers and synchronized playback.
+
+Do not implement a fake timeline made of static rectangles. Each clip must represent real media and have actual editable properties.
+
+---
+
+5. COMPLETE BASIC VIDEO EDITING TOOLS
+
+Implement the following features:
+
+- Trim
+- Split
+- Merge
+- Crop
+- Rotate
+- Flip Horizontal
+- Flip Vertical
+- Resize
+- Reposition
+- Scale
+- Freeze Frame
+- Reverse Playback
+- Duplicate
+- Replace
+- Delete
+- Extract Audio
+- Detach Audio
+- Change Background
+- Picture in Picture
+- Canvas Background
+- Border
+- Shadow
+- Opacity
+
+Every action must update the project state and preview correctly.
+
+---
+
+6. ADVANCED SPEED CONTROL STUDIO
+
+Create a dedicated Speed Editing Panel.
+
+Features:
+
+- Normal Speed
+- Slow Motion
+- Fast Motion
+- Custom Speed
+- Reverse Speed
+- Speed Curve
+- Smooth Slow Motion
+- Optical Flow (when supported)
+- Frame Interpolation
+- Freeze Frame
+- Speed Presets
+
+Allow keyframe-based speed adjustments where supported.
+
+Preserve audio synchronization and provide audio pitch correction options.
+
+---
+
+7. PROFESSIONAL COLOR GRADING STUDIO
+
+Build a complete color correction and grading interface.
+
+Basic Adjustments
+
+- Brightness
+- Exposure
+- Contrast
+- Saturation
+- Temperature
+- Tint
+- Highlights
+- Shadows
+- Whites
+- Blacks
+- Sharpness
+- Fade
+- Vignette
+- Grain
+
+Advanced Color Grading
+
+- HSL
+- RGB Curves
+- Color Wheels
+- Lift
+- Gamma
+- Gain
+- Hue Adjustment
+- Selective Color
+- LUT Import
+- LUT Export
+- LUT Presets
+- Color Matching
+- Before / After Preview
+
+Auto Color Correction
+
+Implement an actual automatic color correction pipeline.
+
+Analyze:
+
+- Exposure
+- White Balance
+- Contrast
+- Saturation
+- Color Cast
+- Highlight Clipping
+- Shadow Detail
+
+Allow users to adjust the strength of automatic correction.
+
+Do not apply irreversible modifications to original footage.
+
+---
+
+8. EFFECTS AND FILTERS LIBRARY
+
+Create a professional effects library.
+
+Categories:
+
+- Cinematic
+- Film
+- Vintage
+- Retro
+- Glitch
+- Blur
+- Glow
+- Light Leak
+- Lens Flare
+- Motion Blur
+- RGB Split
+- VHS
+- Noise
+- Distortion
+- 3D Effects
+- Color Effects
+- Camera Effects
+- Beauty Effects
+- Trending Effects
+
+Features:
+
+- Search Effects
+- Preview Effects
+- Favorite Effects
+- Downloadable Asset Packs
+- Adjustable Effect Strength
+- Effect Duration
+- Keyframe Effect Parameters
+- Multiple Effects Per Clip
+- Effect Layers
+
+Support real-time GPU effects where practical.
+
+---
+
+9. TRANSITIONS AND ANIMATION STUDIO
+
+Transitions
+
+Create a searchable transition library.
+
+Categories:
+
+- Fade
+- Dissolve
+- Zoom
+- Slide
+- Swipe
+- Spin
+- Blur
+- Glitch
+- Light
+- Camera
+- 3D
+- Distortion
+- Cinematic
+- Custom Transitions
+
+Controls:
+
+- Duration
+- Direction
+- Intensity
+- Speed
+- Preview
+- Apply
+- Remove
+
+Animation
+
+Support:
+
+- In Animation
+- Out Animation
+- Combo Animation
+- Custom Animation
+- Fade
+- Zoom
+- Bounce
+- Shake
+- Rotate
+- Slide
+- Pop
+- Scale
+
+Advanced Keyframe Engine
+
+Implement keyframes for:
+
+- Position X/Y
+- Scale X/Y
+- Rotation
+- Opacity
+- Volume
+- Crop
+- Effect Strength
+- Color Parameters
+- Mask Position
+- Supported Motion Properties
+
+Include:
+
+- Linear Interpolation
+- Ease In
+- Ease Out
+- Ease In-Out
+- Bezier Curves
+- Graph Editor
+- Keyframe Copy/Paste
+- Keyframe Deletion
+
+---
+
+10. TEXT, TYPOGRAPHY AND CAPTIONS
+
+Build a professional text editor.
+
+Features:
+
+- Add Text
+- Multiple Text Layers
+- Text Positioning
+- Text Scaling
+- Text Rotation
+- Font Selection
+- Font Import
+- Font Size
+- Font Color
+- Text Alignment
+- Letter Spacing
+- Line Spacing
+- Stroke
+- Shadow
+- Background
+- Gradient Text
+- Text Masking
+- Text Animation
+- 3D-style Text Effects
+
+Bengali Typography Support
+
+Provide:
+
+- Bengali Unicode Text
+- Proper Bengali Font Rendering
+- Bangla Font Selection
+- Bangla Subtitle Support
+- Bangla Line Wrapping
+- Correct Bengali Ligatures
+- Bengali Text Alignment
+
+Support English and Bengali mixed text.
+
+Auto Captions
+
+Implement:
+
+- Speech Recognition
+- Automatic Subtitle Generation
+- Word-level Timing where supported
+- Subtitle Editing
+- Subtitle Styling
+- Subtitle Positioning
+- Multiple Languages where models support them
+- SRT Import
+- SRT Export
+- VTT Import/Export
+- Burn-in Subtitles
+
+Never generate fabricated transcripts when speech recognition fails.
+
+---
+
+11. PROFESSIONAL AUDIO STUDIO
+
+Build a full audio editing workspace.
+
+Features:
+
+- Add Music
+- Add Sound Effects
+- Voiceover Recorder
+- Extract Audio
+- Detach Audio
+- Audio Trimming
+- Audio Splitting
+- Audio Fade In
+- Audio Fade Out
+- Volume Control
+- Audio Keyframes
+- Audio Waveform
+- Audio Synchronization
+- Beat Detection
+- Beat Markers
+- Beat Sync
+- Audio Ducking
+- Equalizer
+- Noise Reduction
+- Vocal Isolation
+- Voice Enhancement
+- Audio Normalization
+- Pitch Adjustment
+- Stereo / Mono Control
+
+Support common audio formats.
+
+Include an audio preview and proper synchronization with video.
+
+---
+
+12. ADVANCED MASKING AND COMPOSITING
+
+Implement professional compositing tools.
+
+Features:
+
+- Rectangle Mask
+- Circle Mask
+- Split Mask
+- Linear Mask
+- Custom Mask
+- Mask Feather
+- Mask Expansion
+- Mask Inversion
+- Animated Mask
+- Chroma Key
+- Green Screen Removal
+- Blue Screen Removal
+- Blend Modes
+- Overlay
+- Opacity
+- Picture in Picture
+- Background Replacement
+- Layer Ordering
+
+Support motion-tracked masks where technically possible.
+
+---
+
+13. AI VIDEO STUDIO
+
+Create a dedicated AI Studio with individual tool interfaces.
+
+AI Video Enhancer
+
+- Video Detail Enhancement
+- Noise Reduction
+- Sharpening
+- Texture Recovery
+- Resolution Upscaling
+- Before / After Comparison
+
+AI Super Resolution
+
+Support:
+
+- 480p to 720p
+- 720p to 1080p
+- 1080p to 2K
+- 1080p to 4K
+- 2K to 4K
+
+Only offer actual supported processing paths.
+
+Do not claim that ordinary resizing creates genuine AI-enhanced details.
+
+Additional AI Features
+
+1. AI Face Enhancement
+2. AI Portrait Retouch
+3. AI Background Removal
+4. AI Object Removal
+5. AI Video Stabilization
+6. AI Noise Reduction
+7. AI Auto Color
+8. AI Relighting
+9. AI Scene Detection
+10. AI Auto Reframe
+11. AI Smart Crop
+12. AI Motion Tracking
+13. AI Auto Captions
+14. AI Text to Speech
+15. AI Voice Enhancement
+16. AI Vocal Isolation
+17. AI Beat Sync
+18. AI Auto Cut
+19. AI Smart Montage
+20. AI Photo Animation
+21. AI Image to Video (where a suitable model is available)
+22. AI Video Style Transfer (where supported)
+
+For every AI tool provide:
+
+- Input Selection
+- Processing Options
+- Strength Control
+- Processing Progress
+- Before Preview
+- After Preview
+- Apply
+- Cancel
+- Error Handling
+
+Prefer on-device AI processing.
+
+If an external model is necessary, make its dependency explicit and do not silently upload personal videos.
+
+---
+
+14. PROFESSIONAL EXPORT ENGINE
+
+Build a real native video rendering and export pipeline.
+
+Resolution
+
+- 480p
+- 720p
+- 1080p Full HD
+- 1440p 2K
+- 2160p 4K
+- 4320p 8K only if supported
+
+Frame Rates
+
+- 24 FPS
+- 25 FPS
+- 30 FPS
+- 50 FPS
+- 60 FPS
+- 120 FPS when supported
+- 240 FPS when supported
+
+Video Formats and Codecs
+
+- MP4 H.264
+- MP4 H.265 / HEVC
+- MOV where supported
+- WebM where supported
+
+Audio
+
+- AAC
+- WAV
+- Supported sample rates
+- Stereo / Mono
+
+Advanced Settings
+
+- Custom Bitrate
+- VBR
+- CBR
+- Encoding Quality
+- Hardware Encoding
+- Software Encoding
+- HDR10 where supported
+- SDR
+- Color Space Selection
+- Audio Bitrate
+- Audio Sample Rate
+- Metadata Preservation
+- Custom Filename
+- Save Location
+- Watermark Options
+
+Export Quality Presets
+
+Create:
+
+- Small File
+- Standard
+- High Quality
+- Ultra Quality
+- 4K Professional
+
+Use adaptive bitrate recommendations based on resolution, frame rate, codec and source footage.
+
+Rendering Dashboard
+
+Display:
+
+- Rendering Percentage
+- Estimated Remaining Time
+- Current Frame
+- Rendering Speed
+- Output Resolution
+- Estimated Output Size
+- CPU Usage where available
+- Memory Usage where available
+- Encoding Status
+
+Support:
+
+- Cancel
+- Pause/Resume where technically supported
+- Background Rendering
+- Export Queue
+- Export Completion Notification
+- Error Recovery
+
+After export:
+
+- Play
+- Share
+- Save to Gallery
+- Open Folder
+- Re-export
+- Return to Editor
+
+The exported file must be a real playable video.
+
+---
+
+15. MEDIA LIBRARY
+
+Create a built-in media selection system.
+
+Tabs:
+
+- Videos
+- Photos
+- Audio
+- Downloads
+- Recent
+- Favorites
+- Folders
+
+Features:
+
+- Media Preview
+- Search
+- Sort by Name
+- Sort by Date
+- Sort by Size
+- Multi-selection
+- Import Selected
+- Import All
+- Duplicate Detection
+- Missing Media Detection
+- Relink Media
+- Media Information
+
+Use Android's supported media access and permission systems.
+
+---
+
+16. PROFESSIONAL PROJECT MANAGEMENT
+
+Implement:
+
+- New Project
+- Open Project
+- Save Project
+- Auto Save
+- Save As
+- Duplicate Project
+- Rename Project
+- Delete Project
+- Project Recovery
+- Project Backup
+- Project Restore
+- Project Import
+- Project Export
+
+Use a structured, versioned project format.
+
+A project must preserve:
+
+- Media References
+- Clip Positions
+- Track Structure
+- Effects
+- Transitions
+- Keyframes
+- Text
+- Audio
+- Color Adjustments
+- Export Settings
+
+Projects must remain editable after closing and reopening the application.
+
+---
+
+17. SETTINGS CENTER
+
+Create a complete Settings Center.
+
+General
+
+- Language
+- Theme
+- Notifications
+- Default Start Page
+- Haptic Feedback
+- Sound Effects
+
+Editing
+
+- Default Canvas Ratio
+- Timeline Zoom
+- Auto Snap
+- Magnetic Timeline
+- Default Transition Duration
+- Undo History
+- Preview Quality
+- Proxy Editing
+
+Performance
+
+- Performance Mode
+- Battery Saver
+- Hardware Acceleration
+- Background Rendering
+- Cache Management
+- Thermal Protection
+- Memory Management
+
+Video
+
+- Default Resolution
+- Default FPS
+- Codec
+- Color Space
+- HDR Preferences
+- Default Bitrate
+
+Storage
+
+- Internal Storage
+- Supported External Storage
+- Project Storage
+- Media Cache
+- Proxy Cache
+- Exported Files
+- Clear Temporary Files
+
+Privacy
+
+- Permissions
+- Local Processing Status
+- AI Model Permissions
+- Analytics Preferences
+- Privacy Policy
+
+Account
+
+- User Profile
+- Subscription
+- Restore Purchase
+- Pro Benefits
+- Help Center
+- About App
+
+---
+
+18. FREE AND PRO SUBSCRIPTION SYSTEM
+
+Create a premium subscription architecture.
+
+Free Version
+
+Provide:
+
+- Basic Video Editing
+- Multi-track Timeline
+- Basic Transitions
+- Basic Effects
+- Text and Captions
+- Audio Editing
+- Manual Color Correction
+- Standard Export
+
+Pro Version
+
+Provide:
+
+- Advanced AI Upscaling
+- Advanced AI Enhancement
+- Premium Effects
+- Premium Filters
+- Premium Transitions
+- Advanced Keyframe Graphs
+- Advanced Audio Tools
+- Professional Color Grading
+- Advanced Tracking
+- Premium Templates
+- Advanced Export
+- Batch Export
+
+Pro Interface
+
+Create:
+
+- Pro Upgrade Page
+- Feature Comparison
+- Subscription Options
+- Monthly Plan
+- Yearly Plan
+- Purchase Status
+- Restore Purchase
+- Billing Management
+
+Use Google Play Billing for Android subscriptions.
+
+Do not invent a successful purchase or unlock premium features without valid entitlement verification.
+
+---
+
+19. UI/UX DESIGN SYSTEM
+
+Create a premium, professional and elegant interface.
+
+Visual Style
+
+- Dark Charcoal Background
+- Deep Gray Panels
+- Purple / Electric Blue Accent
+- Minimal Line Icons
+- Modern Typography
+- Rounded Controls
+- Smooth Animations
+- Clear Hierarchy
+- Consistent Spacing
+
+Interface Requirements
+
+- Responsive Layout
+- Tablet Support
+- Landscape Editing
+- Touch-friendly Controls
+- Horizontal Tool Scrolling
+- Context-sensitive Toolbars
+- Bottom Sheets
+- Confirmation Dialogs
+- Loading States
+- Error Messages
+- Empty States
+- Tooltips
+- Accessibility Support
+
+Avoid clutter and unnecessary menus.
+
+The editing workspace should maximize preview and timeline visibility.
+
+---
+
+20. PERFORMANCE AND OPTIMIZATION
+
+Performance is a critical requirement.
+
+Implement:
+
+- Hardware Video Decoding
+- Hardware Video Encoding
+- GPU Effects Rendering
+- Adaptive Preview Resolution
+- Proxy Editing
+- Efficient Frame Buffer Management
+- Memory Recycling
+- Cache Optimization
+- Thermal Monitoring
+- Background Task Management
+- Export Queue Management
+- Crash Recovery
+- Low Storage Protection
+- Long Video Processing
+- Battery-aware Processing
+
+Do not load an entire large video into RAM.
+
+Process media using efficient streaming and frame-based pipelines.
+
+Do not block the main UI thread during rendering or AI processing.
+
+Use appropriate Kotlin coroutines and background workers.
+
+Ensure that low-end devices receive a suitable adaptive processing configuration.
+
+---
+
+21. TECHNICAL ARCHITECTURE
+
+Recommended implementation:
+
+- Kotlin
+- Jetpack Compose
+- MVVM / Clean Architecture
+- Android Media3
+- Android MediaCodec
+- OpenGL ES / Vulkan
+- Room Database
+- DataStore
+- WorkManager
+- Android Storage APIs
+- TensorFlow Lite / LiteRT where suitable
+- Native C++ components where necessary
+- FFmpeg only with verified licensing and compatible build configuration
+
+Create independent modules:
+
+1. app
+2. core-ui
+3. core-media
+4. media-import
+5. video-player
+6. timeline-engine
+7. editing-engine
+8. audio-engine
+9. effects-engine
+10. color-engine
+11. ai-engine
+12. rendering-engine
+13. export-engine
+14. project-manager
+15. storage-manager
+16. subscription-manager
+17. settings-manager
+
+Use clear interfaces between modules.
+
+Avoid tightly coupling UI code to the rendering engine.
+
+---
+
+22. DEVELOPMENT PHASES
+
+Do not attempt to implement every advanced feature in a single untested code-generation step.
+
+Develop the application progressively.
+
+PHASE 1 – APPLICATION FOUNDATION
+
+Build:
+
+- App Architecture
+- Home Dashboard
+- Bottom Navigation
+- Project Manager
+- Media Import
+- Settings
+- Basic Video Player
+
+Deliver a working application.
+
+PHASE 2 – CORE EDITING ENGINE
+
+Build:
+
+- Timeline
+- Video Tracks
+- Audio Tracks
+- Trim
+- Split
+- Crop
+- Rotate
+- Text
+- Audio
+- Transitions
+- Undo / Redo
+- Auto Save
+
+Test actual editing and preview synchronization.
+
+PHASE 3 – PROFESSIONAL EDITING
+
+Build:
+
+- Multi-layer Timeline
+- Keyframes
+- Speed Curve
+- Color Grading
+- Masking
+- Chroma Key
+- Motion Tracking
+- Advanced Audio
+- Effects
+- Animation
+
+Test each feature with real media files.
+
+PHASE 4 – AI STUDIO
+
+Build:
+
+- AI Upscaling
+- AI Denoising
+- AI Color Correction
+- AI Stabilization
+- AI Captions
+- Background Removal
+- Face Enhancement
+- AI Audio Processing
+
+Use real models and validated processing pipelines.
+
+PHASE 5 – EXPORT ENGINE
+
+Build:
+
+- MP4 Export
+- H.264 / H.265
+- Resolution Selection
+- FPS Selection
+- Bitrate
+- Audio Encoding
+- Background Export
+- Progress Monitoring
+- Error Recovery
+
+Verify the exported file using an actual media player.
+
+PHASE 6 – PRO SYSTEM
+
+Build:
+
+- Subscription
+- Feature Entitlements
+- Premium Assets
+- Purchase Verification
+- Restore Purchase
+
+PHASE 7 – QUALITY ASSURANCE
+
+Perform:
+
+- Functional Testing
+- UI Testing
+- Media Compatibility Testing
+- Performance Testing
+- Memory Testing
+- Export Testing
+- Crash Testing
+- Long Video Testing
+- Low Storage Testing
+- Permission Testing
+
+Fix all critical errors before release.
+
+---
+
+23. QUALITY ACCEPTANCE CHECKLIST
+
+The application is not considered complete until the following requirements are satisfied.
+
+[ ] Application launches successfully.
+
+[ ] Home Dashboard works.
+
+[ ] All five navigation tabs work.
+
+[ ] Videos and photos can be imported.
+
+[ ] Media previews correctly.
+
+[ ] Timeline supports real video clips.
+
+[ ] Multiple video layers work.
+
+[ ] Audio tracks work.
+
+[ ] Split and Trim work.
+
+[ ] Undo and Redo work.
+
+[ ] Text can be added and edited.
+
+[ ] Bengali fonts render correctly.
+
+[ ] Transitions work in the rendered output.
+
+[ ] Filters work in preview and export.
+
+[ ] Color adjustments work.
+
+[ ] Keyframes work.
+
+[ ] Speed adjustment works.
+
+[ ] Project saves and reopens.
+
+[ ] Crash recovery works.
+
+[ ] Export produces an actual playable file.
+
+[ ] 1080p export works on supported devices.
+
+[ ] 4K export works on supported devices.
+
+[ ] Export settings reflect actual encoder capabilities.
+
+[ ] AI tools perform genuine supported operations.
+
+[ ] Unsupported features are clearly identified.
+
+[ ] No dead buttons.
+
+[ ] No fake export process.
+
+[ ] No false AI success messages.
+
+[ ] No unexpected upload of private videos.
+
+[ ] No critical crashes.
+
+---
+
+24. GOOGLE AI STUDIO EXECUTION INSTRUCTIONS
+
+You must act as the lead developer and execute the development work, not merely describe it.
+
+Start by inspecting the available development environment and determining whether it supports native Android project generation or only web application generation.
+
+If native Android project generation is supported:
+
+- Generate the complete Android project.
+- Implement Kotlin and Jetpack Compose.
+- Configure Gradle and dependencies.
+- Create the native media engine.
+- Build and test the application.
+- Prepare APK/AAB build instructions.
+
+If the environment only supports web applications:
+
+- Do not falsely claim that a web application is a native Android application.
+- Build a responsive working prototype if appropriate.
+- Keep the editing architecture modular.
+- Explain the native Android integration requirements.
+- Provide the complete Android implementation roadmap.
+
+For every development phase:
+
+1. Explain the implementation plan briefly.
+2. Create the required files.
+3. Implement the features.
+4. Run available builds and tests.
+5. Fix compilation and runtime errors.
+6. Verify the actual functionality.
+7. Report completed and incomplete features.
+8. Continue to the next phase.
+
+Do not stop after creating the Home Screen.
+
+Do not replace a complex feature with a static UI card.
+
+If a feature cannot be implemented with the available tools or models, explain exactly what dependency is missing and provide a real integration interface.
+
+Maintain a DEVELOPMENT_STATUS.md file listing:
+
+- Completed Features
+- In Progress Features
+- Pending Features
+- Known Bugs
+- Required Dependencies
+- Test Results
+
+Maintain a FEATURE_MATRIX.md file describing every feature, its location, implementation status, and technical requirements.
+
+Prioritize a functional application over decorative UI.
+
+---
+
+25. FINAL DELIVERY REQUIREMENTS
+
+At the end of development, provide:
+
+1. Complete Source Code
+2. Android Project Structure
+3. Gradle Configuration
+4. Required Dependencies
+5. Implemented Video Editing Engine
+6. Timeline Engine
+7. AI Integration Modules
+8. Export Engine
+9. Settings System
+10. Pro Subscription System
+11. Development Documentation
+12. Testing Report
+13. Known Limitations
+14. Android Build Instructions
+15. APK Generation Instructions
+16. AAB Generation Instructions
+
+The final product must look and behave like a professional commercial video editing application.
+
+FINAL MISSION:
+
+Build EditX AI into a powerful, modern, AI-assisted professional video editing platform that combines the usability of CapCut, the editing depth of a professional timeline editor, the intelligence of modern AI enhancement tools, and the flexibility of a native Android application.
+
+Do not sacrifice actual functionality for visual appearance.
+
+Do not claim completion without testing.
+
+Start with Phase 1 and continue systematically until all feasible modules are implemented and verified.

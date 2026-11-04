@@ -79,10 +79,12 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import com.example.core.common.EnhancementPipelineState
 import com.example.core.common.VideoMetadata
+import com.example.core.gpu.HardwareAccelerationManager
 import com.example.ui.theme.CyberBlue
 import com.example.ui.theme.ElectricPurple
 import com.example.ui.theme.EmeraldSuccess
@@ -109,9 +111,10 @@ fun VideoPreviewScreen(
     val context = LocalContext.current
     val originalUri = metadata?.uriString ?: ""
     val hasProcessed = !processedVideoUriString.isNullOrBlank()
+    val hwStatus = remember { HardwareAccelerationManager.inspectHardwareAcceleration(context) }
 
     var comparisonMode by remember {
-        mutableStateOf(if (hasProcessed) PreviewComparisonMode.SPLIT_SLIDER else PreviewComparisonMode.ENHANCED_ONLY)
+        mutableStateOf(PreviewComparisonMode.SPLIT_SLIDER)
     }
 
     var isPlaying by remember { mutableStateOf(true) }
@@ -123,9 +126,11 @@ fun VideoPreviewScreen(
     var splitFraction by remember { mutableFloatStateOf(0.5f) }
     var showQuickOriginal by remember { mutableStateOf(false) }
 
-    // Initialize Primary Media3 ExoPlayer for Original video
+    // Initialize Primary Media3 ExoPlayer for Original video (Hardware VPU Accelerated)
     val originalPlayer = remember(originalUri) {
-        ExoPlayer.Builder(context).build().apply {
+        val renderersFactory = DefaultRenderersFactory(context)
+            .setEnableDecoderFallback(true)
+        ExoPlayer.Builder(context, renderersFactory).build().apply {
             if (originalUri.isNotBlank()) {
                 setMediaItem(MediaItem.fromUri(Uri.parse(originalUri)))
                 repeatMode = Player.REPEAT_MODE_ALL
@@ -135,12 +140,16 @@ fun VideoPreviewScreen(
         }
     }
 
-    // Initialize Secondary Media3 ExoPlayer for Processed video (if available)
-    val processedPlayer = remember(processedVideoUriString) {
-        if (!processedVideoUriString.isNullOrBlank()) {
-            ExoPlayer.Builder(context).build().apply {
-                setMediaItem(MediaItem.fromUri(Uri.parse(processedVideoUriString)))
+    // Initialize Secondary Media3 ExoPlayer for Processed video (or GPU Live Shader twin player)
+    val targetEnhancedUri = if (hasProcessed) processedVideoUriString!! else originalUri
+    val processedPlayer = remember(targetEnhancedUri) {
+        if (targetEnhancedUri.isNotBlank()) {
+            val renderersFactory = DefaultRenderersFactory(context)
+                .setEnableDecoderFallback(true)
+            ExoPlayer.Builder(context, renderersFactory).build().apply {
+                setMediaItem(MediaItem.fromUri(Uri.parse(targetEnhancedUri)))
                 repeatMode = Player.REPEAT_MODE_ALL
+                volume = 0f // Secondary player stays muted so audio never echoes
                 playWhenReady = true
                 prepare()
             }
@@ -170,10 +179,16 @@ fun VideoPreviewScreen(
         }
     }
 
-    // Playhead polling loop
+    // Playhead polling & tight drift correction loop so both hardware players stay locked
     LaunchedEffect(isPlaying) {
         while (isPlaying) {
             currentPositionMs = originalPlayer.currentPosition
+            processedPlayer?.let { secondary ->
+                val drift = kotlin.math.abs(secondary.currentPosition - currentPositionMs)
+                if (drift > 90L) {
+                    secondary.seekTo(currentPositionMs)
+                }
+            }
             delay(150)
         }
     }
@@ -200,7 +215,6 @@ fun VideoPreviewScreen(
         isMuted = !isMuted
         val vol = if (isMuted) 0f else 1f
         originalPlayer.volume = vol
-        processedPlayer?.volume = vol
     }
 
     fun setSpeed(speed: Float) {
@@ -217,7 +231,7 @@ fun VideoPreviewScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
-        // CapCut Pro Header Banner
+        // CapCut Pro Header & Hardware Acceleration Status Banner
         item {
             Card(
                 shape = RoundedCornerShape(20.dp),
@@ -226,14 +240,17 @@ fun VideoPreviewScreen(
                     .fillMaxWidth()
                     .border(1.dp, ElectricPurple.copy(alpha = 0.5f), RoundedCornerShape(20.dp))
             ) {
-                Row(
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Column(modifier = Modifier.weight(1f)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Surface(
                                 shape = RoundedCornerShape(6.dp),
@@ -249,41 +266,63 @@ fun VideoPreviewScreen(
                             }
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                "Media3 Video Preview Engine",
+                                "GPU / NPU Accelerated Preview",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold
                             )
                         }
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = if (hasProcessed) "Comparing Raw Input vs CapCut Pro AI Enhanced Video" else "Real-time Media3 ExoPlayer Playback with AI Pipeline",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+
+                        Surface(
+                            shape = RoundedCornerShape(8.dp),
+                            color = EmeraldSuccess.copy(alpha = 0.18f)
+                        ) {
+                            Text(
+                                text = if (hwStatus.npuNnapiAvailable) "NPU + GPU ACTIVE" else "GPU + SIMD ACTIVE",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = EmeraldSuccess,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                            )
+                        }
                     }
+
+                    Text(
+                        text = if (hasProcessed) {
+                            "Comparing Raw Input vs Exported CapCut Pro AI Video (${hwStatus.primaryHardwareDecoderName})"
+                        } else {
+                            "Zero-Stutter 60fps Live GPU Shader (${hwStatus.activeGpuPipelineName}) • ${hwStatus.activeAiDelegateName}"
+                        },
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
             }
         }
 
         // View Mode Selector (Split Wipe, Dual Sync, A/B Flip, Pro Output)
-        if (hasProcessed) {
-            item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    PreviewComparisonMode.entries.forEach { mode ->
-                        FilterChip(
-                            selected = comparisonMode == mode,
-                            onClick = { comparisonMode = mode },
-                            label = { Text(mode.label, fontSize = 12.sp) },
-                            colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = ElectricPurple.copy(alpha = 0.3f),
-                                selectedLabelColor = Color.White
-                            ),
-                            modifier = Modifier.testTag("chip_mode_${mode.name}")
-                        )
-                    }
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                PreviewComparisonMode.entries.forEach { mode ->
+                    FilterChip(
+                        selected = comparisonMode == mode,
+                        onClick = {
+                            comparisonMode = mode
+                            if (mode == PreviewComparisonMode.QUICK_FLIP) {
+                                showQuickOriginal = !showQuickOriginal
+                            } else {
+                                showQuickOriginal = false
+                            }
+                        },
+                        label = { Text(mode.label, fontSize = 12.sp) },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = ElectricPurple.copy(alpha = 0.3f),
+                            selectedLabelColor = Color.White
+                        ),
+                        modifier = Modifier.testTag("chip_mode_${mode.name}")
+                    )
                 }
             }
         }
@@ -300,22 +339,37 @@ fun VideoPreviewScreen(
             ) {
                 when {
                     // Mode 1: Split Wipe Slider with Drag Bar
-                    hasProcessed && processedPlayer != null && comparisonMode == PreviewComparisonMode.SPLIT_SLIDER -> {
+                    processedPlayer != null && comparisonMode == PreviewComparisonMode.SPLIT_SLIDER -> {
                         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
                             val totalWidthPx = constraints.maxWidth.toFloat()
 
-                            // Base Player: Processed Video (Full width)
+                            // Base Player: Enhanced Video (Full width - either exported MP4 or real-time 60fps GPU shader)
                             AndroidView(
                                 factory = { ctx ->
                                     PlayerView(ctx).apply {
                                         player = processedPlayer
                                         useController = false
+                                        HardwareAccelerationManager.applyLiveGpuShaderToView(
+                                            view = this,
+                                            pipeline = pipeline,
+                                            enabled = !hasProcessed
+                                        )
                                     }
+                                },
+                                update = { view ->
+                                    if (view.player != processedPlayer) {
+                                        view.player = processedPlayer
+                                    }
+                                    HardwareAccelerationManager.applyLiveGpuShaderToView(
+                                        view = view,
+                                        pipeline = pipeline,
+                                        enabled = !hasProcessed
+                                    )
                                 },
                                 modifier = Modifier.fillMaxSize()
                             )
 
-                            // Overlay Player: Original Video (Clipped to split fraction)
+                            // Overlay Player: Original Raw Video (Clipped to split fraction)
                             Box(
                                 modifier = Modifier
                                     .fillMaxHeight()
@@ -327,7 +381,22 @@ fun VideoPreviewScreen(
                                         PlayerView(ctx).apply {
                                             player = originalPlayer
                                             useController = false
+                                            HardwareAccelerationManager.applyLiveGpuShaderToView(
+                                                view = this,
+                                                pipeline = pipeline,
+                                                enabled = false
+                                            )
                                         }
+                                    },
+                                    update = { view ->
+                                        if (view.player != originalPlayer) {
+                                            view.player = originalPlayer
+                                        }
+                                        HardwareAccelerationManager.applyLiveGpuShaderToView(
+                                            view = view,
+                                            pipeline = pipeline,
+                                            enabled = false
+                                        )
                                     },
                                     modifier = Modifier.fillMaxSize()
                                 )
@@ -373,7 +442,7 @@ fun VideoPreviewScreen(
                     }
 
                     // Mode 2: Synchronized Dual View (Side-by-Side)
-                    hasProcessed && processedPlayer != null && comparisonMode == PreviewComparisonMode.DUAL_SYNC -> {
+                    processedPlayer != null && comparisonMode == PreviewComparisonMode.DUAL_SYNC -> {
                         Row(modifier = Modifier.fillMaxSize()) {
                             Box(modifier = Modifier.weight(1f).fillMaxHeight()) {
                                 AndroidView(
@@ -381,7 +450,19 @@ fun VideoPreviewScreen(
                                         PlayerView(ctx).apply {
                                             player = originalPlayer
                                             useController = false
+                                            HardwareAccelerationManager.applyLiveGpuShaderToView(
+                                                view = this,
+                                                pipeline = pipeline,
+                                                enabled = false
+                                            )
                                         }
+                                    },
+                                    update = { view ->
+                                        HardwareAccelerationManager.applyLiveGpuShaderToView(
+                                            view = view,
+                                            pipeline = pipeline,
+                                            enabled = false
+                                        )
                                     },
                                     modifier = Modifier.fillMaxSize()
                                 )
@@ -400,7 +481,19 @@ fun VideoPreviewScreen(
                                         PlayerView(ctx).apply {
                                             player = processedPlayer
                                             useController = false
+                                            HardwareAccelerationManager.applyLiveGpuShaderToView(
+                                                view = this,
+                                                pipeline = pipeline,
+                                                enabled = !hasProcessed
+                                            )
                                         }
+                                    },
+                                    update = { view ->
+                                        HardwareAccelerationManager.applyLiveGpuShaderToView(
+                                            view = view,
+                                            pipeline = pipeline,
+                                            enabled = !hasProcessed
+                                        )
                                     },
                                     modifier = Modifier.fillMaxSize()
                                 )
@@ -409,31 +502,42 @@ fun VideoPreviewScreen(
                                     color = ElectricPurple.copy(alpha = 0.85f),
                                     modifier = Modifier.padding(8.dp).align(Alignment.TopEnd)
                                 ) {
-                                    Text("PRO AI", color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp))
+                                    Text("PRO AI GPU", color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp))
                                 }
                             }
                         }
                     }
 
-                    // Mode 3: A/B Flip or Default Single Player
+                    // Mode 3: A/B Flip or Pro Output Single Player
                     else -> {
                         val activePlayer = if (hasProcessed && processedPlayer != null && !showQuickOriginal) {
                             processedPlayer
                         } else {
                             originalPlayer
                         }
+                        val enableLiveShader = !hasProcessed && !showQuickOriginal
 
                         AndroidView(
                             factory = { ctx ->
                                 PlayerView(ctx).apply {
                                     player = activePlayer
                                     useController = false
+                                    HardwareAccelerationManager.applyLiveGpuShaderToView(
+                                        view = this,
+                                        pipeline = pipeline,
+                                        enabled = enableLiveShader
+                                    )
                                 }
                             },
                             update = { view ->
                                 if (view.player != activePlayer) {
                                     view.player = activePlayer
                                 }
+                                HardwareAccelerationManager.applyLiveGpuShaderToView(
+                                    view = view,
+                                    pipeline = pipeline,
+                                    enabled = enableLiveShader
+                                )
                             },
                             modifier = Modifier.fillMaxSize()
                         )
@@ -459,19 +563,21 @@ fun VideoPreviewScreen(
                         )
                     }
 
-                    if (hasProcessed) {
-                        Surface(
-                            shape = RoundedCornerShape(8.dp),
-                            color = ElectricPurple.copy(alpha = 0.9f)
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = ElectricPurple.copy(alpha = 0.9f)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                         ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                            ) {
-                                Icon(Icons.Default.AutoAwesome, contentDescription = null, tint = Color.White, modifier = Modifier.size(14.dp))
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text("4K UHD • DSLR BOKEH", style = MaterialTheme.typography.labelSmall, color = Color.White)
-                            }
+                            Icon(Icons.Default.AutoAwesome, contentDescription = null, tint = Color.White, modifier = Modifier.size(14.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = if (hasProcessed) "EXPORTED PRO MP4" else "GPU LIVE SHADER • 60FPS",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = Color.White
+                            )
                         }
                     }
                 }

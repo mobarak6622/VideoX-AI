@@ -1,6 +1,6 @@
 {
-  "name": "VideoX AI",
-  "description": "Professional 100% Offline AI Video Enhancer, 4K Upscaler, Frame Interpolation, Auto Color, Denoising, and Stabilization Engine for Android.",
+  "name": "EditX AI",
+  "description": "EditX AI – Professional CapCut-style Android Video Editor with multi-track timeline, GPU rendering, AI enhancement, Bengali typography, and 4K export.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
